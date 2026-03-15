@@ -1,7 +1,7 @@
 import HttpError from "../models/http-error.js";
 import uuid from "uuid/v4";
 
-const dummy_products = [
+let dummy_products = [
   {
     id: 1,
     name: 'Hat',
@@ -42,3 +42,27 @@ export const addProduct = async (req, res) => {
 
   res.status(201).json({product: product});
 }
+
+export const updateProduct = async (req, res, next) => {
+  const {name, description } = req.body;
+  const id = req.params.id;
+
+  const updatedProduct = {...dummy_products.find((p) => p.id === id)};
+  const productIndex = dummy_products.findIndex((p) => p.id === id);
+  updatedProduct.name = name;
+  updatedProduct.description = description;
+
+  dummy_products[productIndex] = updatedProduct;
+
+  res.status(200).json({product: updatedProduct});
+
+};
+
+export const deleteProduct = async(req, res, next) => {
+
+  const id = req.params.id;
+  dummy_products.filter((p) => p.id !== id);
+
+  res.status(200).json({message: "Deleted product"});
+
+};
