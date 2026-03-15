@@ -35,8 +35,7 @@ app.use((error, req, res, next) => {
   res.status(error.code || 500).json({message: error.message || "Unknown error occurred"});
 });
 
-connectDB().then(() => {
-  app.listen(PORT, () => {
+await connectDB();
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-})

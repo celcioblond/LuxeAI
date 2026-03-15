@@ -1,5 +1,5 @@
 import HttpError from "../models/http-error.js";
-import { v4 as uuid } from "uuid";
+import Product from "../models/productModel.js";
 
 let dummy_products = [
   {
@@ -25,22 +25,23 @@ export const getProductById = async (req, res, next) => {
       new HttpError("Could not find a product with the provided id",404)
     );
   }
-
   res.status(200).json({product});
 };
 
 export const addProduct = async (req, res) => {
-  const { name, description, quantity } = req.body;
-  const product = {
-    id: uuid(),
-    name: name,
-    description: description,
-    quantity: quantity
-  };
-
-  dummy_products.push(product);
-
-  res.status(201).json({product: product});
+  try {
+    const { name, description, price, imageUrl } = req.body;
+    const product = new Product({
+      name,
+      description,
+      price,
+      imageUrl
+    });
+    const savedProduct = await product.save();
+    res.status(201).json({message: "Product added: ", product: savedProduct})
+  } catch(error) {
+    throw new HttpError("Could not post product on database: ", 404);
+  }
 }
 
 export const updateProduct = async (req, res, next) => {

@@ -2,3 +2,14 @@ GET http://localhost:3000/api/products/
 
 ###
 GET http://localhost:3000/api/products/1
+
+###
+POST http://localhost:3000/api/products
+Content-Type: application/json
+
+{
+  "name": "Snapback",
+  "description": "White sox hat",
+  "price": 67,
+  "imageUrl": "url/example"
+}
