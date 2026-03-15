@@ -1,5 +1,5 @@
 import HttpError from "../models/http-error.js";
-import uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 
 let dummy_products = [
   {
