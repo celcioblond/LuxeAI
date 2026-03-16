@@ -28,6 +28,10 @@ export const getProductById = async (req, res, next) => {
   res.status(200).json({product});
 };
 
+export const searchProduct = async(req, res) => {
+  
+}
+
 export const addProduct = async (req, res) => {
   try {
     const { name, description, price, imageUrl } = req.body;
