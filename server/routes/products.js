@@ -8,6 +8,11 @@ import {
   deleteProduct,
 } from "../controllers/products.js";
 import { protect, isAdmin } from "../middlewares/auth.middleware.js";
+import {
+  validate,
+  createProductRules,
+  updateProductRules,
+} from "../middlewares/validate.js";
 
 const router = express.Router();
 
@@ -17,8 +22,8 @@ router.get("/search",  searchProduct);
 router.get("/:id",     getProductById);
 
 // Admin only
-router.post("/",       protect, isAdmin, addProduct);
-router.patch("/:id",   protect, isAdmin, updateProduct);
+router.post("/",       protect, isAdmin, createProductRules, validate, addProduct);
+router.patch("/:id",   protect, isAdmin, updateProductRules, validate, updateProduct);
 router.delete("/:id",  protect, isAdmin, deleteProduct);
 
 export default router;

@@ -19,14 +19,45 @@ export const createOrder = async (req, res, next) => {
     return next(new HttpError("Payment method is required.", 400));
   }
 
-  // Build snapshots and calculate totals
+  // Build snapshots, validate stock, and collect pending decrements
   let orderItems;
+  const stockDecrements = []; // { product, variantIndex | null, quantity }
+
   try {
     orderItems = await Promise.all(
       items.map(async ({ productId, quantity, size, color }) => {
         const product = await Product.findById(productId);
         if (!product) throw new Error(`Product ${productId} not found.`);
         if (!product.isAvailable) throw new Error(`${product.name} is no longer available.`);
+
+        // Match against a specific variant when size/color are provided
+        const variantIndex =
+          size != null || color != null
+            ? product.variants.findIndex(
+                (v) =>
+                  (size  == null || v.size  === size) &&
+                  (color == null || v.color === color)
+              )
+            : -1;
+
+        if (variantIndex !== -1) {
+          // Variant-level stock check
+          const variant = product.variants[variantIndex];
+          if (variant.stock < quantity) {
+            throw new Error(
+              `Not enough stock for ${product.name} (${size ?? ""}${color ? " / " + color : ""}). Available: ${variant.stock}.`
+            );
+          }
+          stockDecrements.push({ product, variantIndex, quantity });
+        } else {
+          // Fall back to overall product stock
+          if (product.stock < quantity) {
+            throw new Error(
+              `Not enough stock for ${product.name}. Available: ${product.stock}.`
+            );
+          }
+          stockDecrements.push({ product, variantIndex: null, quantity });
+        }
 
         return {
           product:       product._id,
@@ -67,6 +98,27 @@ export const createOrder = async (req, res, next) => {
   } catch (err) {
     return next(new HttpError(err.message || "Could not create order.", 500));
   }
+
+  // Decrement stock now that the order is persisted
+  await Promise.all(
+    stockDecrements.map(({ product, variantIndex, quantity }) => {
+      if (variantIndex !== null) {
+        product.variants[variantIndex].stock -= quantity;
+      } else {
+        product.stock -= quantity;
+      }
+
+      // Auto-mark unavailable when all stock is exhausted
+      const totalStock =
+        product.variants.length > 0
+          ? product.variants.reduce((sum, v) => sum + v.stock, 0)
+          : product.stock;
+
+      if (totalStock === 0) product.isAvailable = false;
+
+      return product.save();
+    })
+  );
 
   res.status(201).json({ order });
 };

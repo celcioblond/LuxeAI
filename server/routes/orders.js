@@ -1,4 +1,3 @@
-// ✅ Fixed
 import express from "express"
 import {
   createOrder,
@@ -7,13 +6,13 @@ import {
   updateOrderStatus,
 } from "../controllers/orders.js"
 import { protect, isAdmin } from "../middlewares/auth.middleware.js"
+import { validate, createOrderRules } from "../middlewares/validate.js"
 
 const router = express.Router()
 
-// All order routes are protected — you must be logged in
-router.post("/",              protect,          createOrder)
+router.post("/",              protect,          createOrderRules, validate, createOrder)
 router.get("/my-orders",      protect,          getMyOrders)
-router.get("/:id",            protect,          getOrderById)       // was missing /
-router.patch("/:id/status",   protect, isAdmin, updateOrderStatus)  // admin only
+router.get("/:id",            protect,          getOrderById)
+router.patch("/:id/status",   protect, isAdmin, updateOrderStatus)
 
 export default router

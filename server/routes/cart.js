@@ -7,13 +7,14 @@ import {
   clearCart,
 } from "../controllers/cart.js"
 import { protect } from "../middlewares/auth.middleware.js"
+import { validate, addToCartRules, updateCartRules } from "../middlewares/validate.js"
 
 const router = express.Router()
 
 router.get("/",           protect, getCart)
-router.post("/",          protect, addToCart)
-router.patch("/:itemId",  protect, updateQuantity)  // PATCH to update quantity
-router.delete("/:itemId", protect, removeItem)      // must come before /
+router.post("/",          protect, addToCartRules,  validate, addToCart)
+router.patch("/:itemId",  protect, updateCartRules, validate, updateQuantity)
+router.delete("/:itemId", protect, removeItem)
 router.delete("/",        protect, clearCart)
 
 export default router
