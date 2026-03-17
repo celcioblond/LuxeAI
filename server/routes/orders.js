@@ -6,7 +6,7 @@ import {
   getOrderById,
   updateOrderStatus,
 } from "../controllers/orders.js"
-import { protect, isAdmin } from "../middleware/auth.middleware.js"
+import { protect, isAdmin } from "../middlewares/auth.middleware.js"
 
 const router = express.Router()
 

@@ -22,8 +22,8 @@ const cartItemSchema = new mongoose.Schema(
       trim: true,
     },
   },
-  { _id: false } 
 )
+
 
 const cartSchema = new mongoose.Schema(
   {

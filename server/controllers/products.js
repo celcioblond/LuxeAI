@@ -1,73 +1,118 @@
-import HttpError from "../models/http-error.js";
 import Product from "../models/productModel.js";
+import HttpError from "../models/http-error.js";
 
-let dummy_products = [
-  {
-    id: 1,
-    name: 'Hat',
-    description: 'a cool ass hat',
-    price: 29.99,
-  },
-];
+export const getAllProducts = async (req, res, next) => {
+  const { category, minPrice, maxPrice, sort, page = 1, limit = 20 } = req.query;
 
-export const getAllProducts = async (req, res) => {
-  res.status(200).json({ dummy_products });
+  const filter = { isAvailable: true };
+  if (category) filter.category = category;
+  if (minPrice || maxPrice) {
+    filter.price = {};
+    if (minPrice) filter.price.$gte = Number(minPrice);
+    if (maxPrice) filter.price.$lte = Number(maxPrice);
+  }
+
+  const sortMap = {
+    price_asc:  { price: 1 },
+    price_desc: { price: -1 },
+    newest:     { releaseDate: -1 },
+    rating:     { averageRating: -1 },
+  };
+  const sortOption = sortMap[sort] || { createdAt: -1 };
+  const skip = (Number(page) - 1) * Number(limit);
+
+  let products, total;
+  try {
+    [products, total] = await Promise.all([
+      Product.find(filter).sort(sortOption).skip(skip).limit(Number(limit)),
+      Product.countDocuments(filter),
+    ]);
+  } catch (err) {
+    return next(new HttpError("Failed to fetch products.", 500));
+  }
+
+  res.json({ total, page: Number(page), pages: Math.ceil(total / limit), products });
 };
 
 export const getProductById = async (req, res, next) => {
-  const pid = parseInt(req.params.id);
-  const product = dummy_products.find((p) => {
-    return p.id === pid;
-  });
+  let product;
+  try {
+    product = await Product.findById(req.params.id);
+  } catch {
+    return next(new HttpError("Invalid product ID.", 400));
+  }
 
   if (!product) {
-    return next(
-      new HttpError("Could not find a product with the provided id",404)
-    );
+    return next(new HttpError("Product not found.", 404));
   }
-  res.status(200).json({product});
+
+  res.json({ product });
 };
 
-export const searchProduct = async(req, res) => {
-  
-}
+export const searchProduct = async (req, res, next) => {
+  const { q, category } = req.query;
 
-export const addProduct = async (req, res) => {
-  try {
-    const { name, description, price, imageUrl } = req.body;
-    const product = new Product({
-      name,
-      description,
-      price,
-      imageUrl
-    });
-    const savedProduct = await product.save();
-    res.status(201).json({message: "Product added: ", product: savedProduct})
-  } catch(error) {
-    throw new HttpError("Could not post product on database: ", 404);
+  if (!q) {
+    return next(new HttpError("Search query is required.", 400));
   }
-}
+
+  const filter = { $text: { $search: q }, isAvailable: true };
+  if (category) filter.category = category;
+
+  let products;
+  try {
+    products = await Product.find(filter, { score: { $meta: "textScore" } })
+      .sort({ score: { $meta: "textScore" } })
+      .limit(30);
+  } catch (err) {
+    return next(new HttpError("Search failed.", 500));
+  }
+
+  res.json({ results: products.length, products });
+};
+
+export const addProduct = async (req, res, next) => {
+  const { name, description, price, discountPrice, category, tags, images, variants, stock } = req.body;
+
+  let product;
+  try {
+    product = await Product.create({ name, description, price, discountPrice, category, tags, images, variants, stock });
+  } catch (err) {
+    return next(new HttpError(err.message || "Could not create product.", 500));
+  }
+
+  res.status(201).json({ product });
+};
 
 export const updateProduct = async (req, res, next) => {
-  const {name, description } = req.body;
-  const id = req.params.id;
+  let product;
+  try {
+    product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+  } catch (err) {
+    return next(new HttpError(err.message || "Could not update product.", 500));
+  }
 
-  const updatedProduct = {...dummy_products.find((p) => p.id === id)};
-  const productIndex = dummy_products.findIndex((p) => p.id === id);
-  updatedProduct.name = name;
-  updatedProduct.description = description;
+  if (!product) {
+    return next(new HttpError("Product not found.", 404));
+  }
 
-  dummy_products[productIndex] = updatedProduct;
-
-  res.status(200).json({product: updatedProduct});
-
+  res.json({ product });
 };
 
-export const deleteProduct = async(req, res, next) => {
+export const deleteProduct = async (req, res, next) => {
+  let product;
+  try {
+    product = await Product.findByIdAndDelete(req.params.id);
+  } catch {
+    return next(new HttpError("Invalid product ID.", 400));
+  }
 
-  const id = req.params.id;
-  dummy_products.filter((p) => p.id !== id);
+  if (!product) {
+    return next(new HttpError("Product not found.", 404));
+  }
 
-  res.status(200).json({message: "Deleted product"});
-
+  res.json({ message: "Product deleted." });
 };
