@@ -4,6 +4,7 @@ import auth from "./routes/auth.js";
 import products from "./routes/products.js";
 import orders from "./routes/orders.js";
 import cart from "./routes/cart.js";
+import reviews from "./routes/reviews.js";
 import cors from "cors";
 import bodyParser from "body-parser";
 import HttpError from "./models/http-error.js";
@@ -26,6 +27,7 @@ app.use("/api/auth",     auth);
 app.use("/api/products", products);
 app.use("/api/orders",   orders);
 app.use("/api/cart",     cart);
+app.use("/api/reviews",  reviews);
 
 app.use((_req, _res, next) => {
   next(new HttpError("Could not find this route", 404));
