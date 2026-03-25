@@ -1,5 +1,6 @@
 import Order from "../models/orderModel.js";
 import Product from "../models/productModel.js";
+import Cart from "../models/cartModel.js";
 import HttpError from "../models/http-error.js";
 
 const TAX_RATE      = 0.10;  // 10%
@@ -120,6 +121,9 @@ export const createOrder = async (req, res, next) => {
     })
   );
 
+  // Clear the user's cart now that the order is placed
+  await Cart.findOneAndUpdate({ user: req.user._id }, { items: [] });
+
   res.status(201).json({ order });
 };
 
@@ -154,6 +158,66 @@ export const getOrderById = async (req, res, next) => {
   res.json({ order });
 };
 
+export const cancelOrder = async (req, res, next) => {
+  let order;
+  try {
+    order = await Order.findById(req.params.id);
+  } catch {
+    return next(new HttpError("Invalid order ID.", 400));
+  }
+
+  if (!order) {
+    return next(new HttpError("Order not found.", 404));
+  }
+
+  if (order.user.toString() !== req.user._id.toString()) {
+    return next(new HttpError("Not authorized to cancel this order.", 403));
+  }
+
+  const cancellableStatuses = ["pending", "confirmed"];
+  if (!cancellableStatuses.includes(order.status)) {
+    return next(new HttpError(`Cannot cancel an order with status "${order.status}".`, 400));
+  }
+
+  order.status = "cancelled";
+
+  try {
+    await order.save();
+  } catch (err) {
+    return next(new HttpError(err.message || "Could not cancel order.", 500));
+  }
+
+  // Restore stock for each item
+  await Promise.all(
+    order.items.map(async ({ product: productId, size, color, quantity }) => {
+      const product = await Product.findById(productId);
+      if (!product) return;
+
+      const variantIndex =
+        size != null || color != null
+          ? product.variants.findIndex(
+              (v) =>
+                (size  == null || v.size  === size) &&
+                (color == null || v.color === color)
+            )
+          : -1;
+
+      if (variantIndex !== -1) {
+        product.variants[variantIndex].stock += quantity;
+      } else {
+        product.stock += quantity;
+      }
+
+      // Re-enable if it was marked unavailable due to zero stock
+      product.isAvailable = true;
+
+      return product.save();
+    })
+  );
+
+  res.json({ order });
+};
+
 export const updateOrderStatus = async (req, res, next) => {
   const { status, note } = req.body;
 
@@ -174,12 +238,17 @@ export const updateOrderStatus = async (req, res, next) => {
   }
 
   order.status = status;
-  if (note) order.statusHistory[order.statusHistory.length - 1].note = note;
 
   try {
-    await order.save();
+    await order.save(); // pre-save hook pushes { status } onto statusHistory here
   } catch (err) {
     return next(new HttpError(err.message || "Could not update order status.", 500));
+  }
+
+  // Attach the note to the entry that was just pushed by the pre-save hook
+  if (note) {
+    order.statusHistory[order.statusHistory.length - 1].note = note;
+    await order.save();
   }
 
   res.json({ order });

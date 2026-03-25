@@ -41,8 +41,21 @@ export const login = async (req, res, next) => {
     return next(new HttpError("Email and password are required.", 400));
   }
 
-  const user = await User.findOne({ email }).select("+password");
-  if (!user || !(await user.comparePassword(password))) {
+  let user;
+  try {
+    user = await User.findOne({ email }).select("+password");
+  } catch {
+    return next(new HttpError("Login failed.", 500));
+  }
+
+  let passwordMatch = false;
+  try {
+    passwordMatch = user ? await user.comparePassword(password) : false;
+  } catch {
+    return next(new HttpError("Login failed.", 500));
+  }
+
+  if (!user || !passwordMatch) {
     return next(new HttpError("Invalid email or password.", 401));
   }
 
@@ -59,7 +72,12 @@ export const login = async (req, res, next) => {
 };
 
 export const getProfile = async (req, res, next) => {
-  const user = await User.findById(req.user._id).populate("wishlist", "name price images");
+  let user;
+  try {
+    user = await User.findById(req.user._id).populate("wishlist", "name price images");
+  } catch {
+    return next(new HttpError("Failed to fetch profile.", 500));
+  }
 
   if (!user) {
     return next(new HttpError("User not found.", 404));
@@ -79,10 +97,15 @@ export const updateProfile = async (req, res, next) => {
     return next(new HttpError("No valid fields to update.", 400));
   }
 
-  const user = await User.findByIdAndUpdate(req.user._id, updates, {
-    new: true,
-    runValidators: true,
-  });
+  let user;
+  try {
+    user = await User.findByIdAndUpdate(req.user._id, updates, {
+      new: true,
+      runValidators: true,
+    });
+  } catch (err) {
+    return next(new HttpError(err.message || "Failed to update profile.", 500));
+  }
 
   res.json({ user });
 };
