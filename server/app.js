@@ -22,7 +22,7 @@ const app = express();
 
 app.use(cors());
 app.use(morgan("dev"));
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.use("/api/auth",     auth);
 app.use("/api/products", products);
@@ -36,10 +36,10 @@ app.use((_req, _res, next) => {
 });
 
 app.use((error, _req, res, next) => {
-  if (res.headersSent) {
-    return next(error);
-  }
-  res.status(error.code || 500).json({ message: error.message || "Unknown error occurred" });
+  const status = error.statusCode || 500;
+  const message = error.message;
+  const data = error.data;
+  res.status(status).json({message, data});
 });
 
 await connectDB();

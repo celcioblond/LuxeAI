@@ -1,31 +1,28 @@
 import { body, param, query, validationResult } from "express-validator";
 import HttpError from "../models/http-error.js";
 
-// Runs after rule chains — collects errors and short-circuits with 400
 export const validate = (req, _res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    const message = errors
-      .array()
-      .map((e) => e.msg)
-      .join(" | ");
-    return next(new HttpError(message, 400));
+    const error = new Error("Validation failed");
+    error.statusCode = 422;
+    error.data = errors.array();
+    throw error;
   }
   next();
 };
 
-// ── Auth ────────────────────────────────────────────────────────────────────
-
 export const registerRules = [
   body("name").trim().notEmpty().withMessage("Name is required."),
-  body("email").isEmail().withMessage("A valid email is required.").normalizeEmail(),
+  body("email").isEmail().withMessage("Enter a valid email.").normalizeEmail(),
   body("password")
+    .trim()
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters."),
 ];
 
 export const loginRules = [
-  body("email").isEmail().withMessage("A valid email is required.").normalizeEmail(),
+  body("email").isEmail().withMessage("Enter a valid email.").normalizeEmail(),
   body("password").notEmpty().withMessage("Password is required."),
 ];
 
@@ -41,8 +38,6 @@ export const updateProfileRules = [
     .isPostalCode("any")
     .withMessage("Invalid zip/postal code."),
 ];
-
-// ── Products ─────────────────────────────────────────────────────────────────
 
 const VALID_CATEGORIES = ["clothing", "shoes", "accessories", "bags"];
 
@@ -85,8 +80,6 @@ export const updateProductRules = [
     .withMessage("Stock must be a non-negative integer."),
 ];
 
-// ── Cart ─────────────────────────────────────────────────────────────────────
-
 export const addToCartRules = [
   body("productId").isMongoId().withMessage("Invalid product ID."),
   body("quantity")
@@ -101,7 +94,6 @@ export const updateCartRules = [
     .withMessage("Quantity must be at least 1."),
 ];
 
-// ── Orders ───────────────────────────────────────────────────────────────────
 
 const VALID_PAYMENT_METHODS = ["card", "paypal", "apple_pay", "google_pay"];
 
@@ -121,7 +113,6 @@ export const createOrderRules = [
     .withMessage(`Payment method must be one of: ${VALID_PAYMENT_METHODS.join(", ")}.`),
 ];
 
-// ── Reviews ──────────────────────────────────────────────────────────────────
 
 export const createReviewRules = [
   param("productId").isMongoId().withMessage("Invalid product ID."),

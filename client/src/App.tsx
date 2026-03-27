@@ -1,8 +1,13 @@
-export const App = () => {
+import {BrowserRouter as Router, Route} from "react-router-dom";
+import Register from "./pages/Auth/Register";
+
+const App = () => {
   return (
-    <>
-      <h1 className="text-8xl">Client</h1>
-    </>
+    <Router>
+      <Route path="/register">
+        <Register />
+      </Route>
+    </Router>
   )
 }
 

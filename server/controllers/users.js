@@ -2,10 +2,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 import HttpError from "../models/http-error.js";
 
-const signToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
-  });
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export const register = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -43,29 +40,31 @@ export const login = async (req, res, next) => {
 
   let user;
   try {
-    user = await User.findOne({ email }).select("+password");
+    user = await User.findOne({ email });
   } catch {
     return next(new HttpError("Login failed.", 500));
   }
 
   let passwordMatch = false;
   try {
-    passwordMatch = user ? await user.comparePassword(password) : false;
+    passwordMatch = await bcrypt.compare(password, user.password);
   } catch {
     return next(new HttpError("Login failed.", 500));
   }
 
-  if (!user || !passwordMatch) {
-    return next(new HttpError("Invalid email or password.", 401));
+  if (!passwordMatch) {
+    return next(new HttpError("Invalid password.", 401));
   }
 
-  if (!user.isActive) {
-    return next(new HttpError("This account has been deactivated.", 403));
-  }
+  const token = jwt.sign({
+    email: user.email,
+    userId: user._id.toString(),
+  }, JWT_SECRET, 
+{
+  expiresIn: "24h"
+});
 
-  const token = signToken(user._id);
-
-  res.json({
+  res.status(200).json({
     token,
     user: { id: user._id, name: user.name, email: user.email, role: user.role },
   });
