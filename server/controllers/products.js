@@ -34,20 +34,21 @@ export const getAllProducts = async (req, res, next) => {
   res.json({ total, page: Number(page), pages: Math.ceil(total / limit), products });
 };
 
+
 export const getProductById = async (req, res, next) => {
-  let product;
   try {
-    product = await Product.findById(req.params.id);
-  } catch {
-    return next(new HttpError("Invalid product ID.", 400));
+    const {productId} = req.params.id;
+    const product = await Product.findById(productId);
+    if (!product) {
+      return next(new HttpError("Product not found. ", 404));
+    }
+    res.status(200).json({
+      product
+    });
+  } catch(error) {
+    return next(new HttpError("Invalid id", 400))
   }
-
-  if (!product) {
-    return next(new HttpError("Product not found.", 404));
-  }
-
-  res.json({ product });
-};
+}
 
 export const searchProduct = async (req, res, next) => {
   const { q, category } = req.query;
@@ -72,35 +73,51 @@ export const searchProduct = async (req, res, next) => {
 };
 
 export const addProduct = async (req, res, next) => {
-  const { name, description, price, discountPrice, category, tags, images, variants, stock } = req.body;
-
-  let product;
   try {
-    product = await Product.create({ name, description, price, discountPrice, category, tags, images, variants, stock });
-  } catch (err) {
-    return next(new HttpError(err.message || "Could not create product.", 500));
+    const { name, description, price, discountPrice, category, tags, images, variants, stock} = req.body;
+    const product = await Product.create({name, description, price, discountPrice, category, tags, images, variants, stock});
+    res.status(201).json({
+      message: "Product added",
+      product
+    });
+  } catch (error) {
+    return next(new HttpError(error.message), 500);
   }
+}
 
-  res.status(201).json({ product });
-};
+// export const updateProduct = async (req, res, next) => {
+//   let product;
+//   try {
+//     product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+//       new: true,
+//       runValidators: true,
+//     });
+//   } catch (err) {
+//     return next(new HttpError(err.message || "Could not update product.", 500));
+//   }
+
+//   if (!product) {
+//     return next(new HttpError("Product not found.", 404));
+//   }
+
+//   res.json({ product });
+// };
 
 export const updateProduct = async (req, res, next) => {
-  let product;
   try {
-    product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-  } catch (err) {
-    return next(new HttpError(err.message || "Could not update product.", 500));
+    const {productId} = req.params.body;
+    const product = await Product.findByIdAndUpdate(productId);
+    if(!product){
+      return next(new HttpError("Product not found", 404));
+    }
+    res.status(200).json({
+      message: "Post updated",
+      product
+    })
+  } catch (error) {
+    return next(new HttpError("Updating product failed", 500));
   }
-
-  if (!product) {
-    return next(new HttpError("Product not found.", 404));
-  }
-
-  res.json({ product });
-};
+}
 
 export const deleteProduct = async (req, res, next) => {
   let product;
