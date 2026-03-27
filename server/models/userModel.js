@@ -59,22 +59,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next()
-
-  this.password = await bcrypt.hash(this.password, 12)
-  next()
-})
-
-userSchema.pre("save", function (next) {
-  if (!this.isModified("password") || this.isNew) return next()
-
-  // Subtract 1s to ensure the token is always issued after this timestamp
-  this.passwordChangedAt = Date.now() - 1000
-  next()
-});
-
-
 const User = mongoose.model("User", userSchema)
 
 export default User

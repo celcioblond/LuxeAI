@@ -12,4 +12,23 @@ Content-Type: application/json
   "description": "White sox hat",
   "price": 67,
   "imageUrl": "url/example"
+} 
+
+###
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json 
+
+{
+  "name": "will",
+  "email": "will@hotmail.com",
+  "password": "houston2027"
+}
+
+###
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "will@hotmail.com",
+  "password": "houston2027"
 }
