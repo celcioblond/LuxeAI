@@ -58,7 +58,7 @@ export const login = async (req, res, next) => {
 
     let passwordMatch = await bcrypt.compare(password, user.password);
     if(!passwordMatch) {
-      return next(new HttpError("Password is invalid", 500));
+      return next(new HttpError("Password is invalid", 401));
     }
     const token = jwt.sign({
       userId: user._id.toString(),
@@ -123,7 +123,6 @@ export const updateProfile = async (req, res, next) => {
   res.json({ user });
 };
 
-// GET /api/auth/wishlist
 export const getWishlist = async (req, res, next) => {
   let user;
   try {
@@ -138,7 +137,6 @@ export const getWishlist = async (req, res, next) => {
   res.json({ wishlist: user.wishlist });
 };
 
-// POST /api/auth/wishlist/:productId
 export const addToWishlist = async (req, res, next) => {
   const { productId } = req.params;
 
@@ -169,7 +167,6 @@ export const addToWishlist = async (req, res, next) => {
     .json({ message: 'Product added to wishlist.', wishlist: user.wishlist });
 };
 
-// DELETE /api/auth/wishlist/:productId
 export const removeFromWishlist = async (req, res, next) => {
   const { productId } = req.params;
 
