@@ -49,7 +49,7 @@ export const register = async (
     );
     return response.data;
   } catch (error) {
-    const err = error as AxiosError<any>;
+    const err = error as AxiosError<{ message?: string }>;
     throw new Error(err.response?.data?.message || err.message, {
       cause: error,
     });

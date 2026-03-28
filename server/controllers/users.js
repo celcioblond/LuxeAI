@@ -26,7 +26,7 @@ export const register = async (req, res, next) => {
     });
 
     const result = await user.save();
-    const token = jwt.sign({userId: user._id.toString(), email: user.email}, process.env.JWT_SECRET, {
+    const token = jwt.sign({userId: user._id.toString(), email: user.email, role: user.role}, process.env.JWT_SECRET, {
       expiresIn: "24h"
     });
 
