@@ -37,6 +37,7 @@ export const register = async (req, res, next) => {
         id: user._id.toString(),
         name: user.name,
         email: user.email,
+        role: user.role
       }
     });
   } catch(error) {
@@ -62,7 +63,8 @@ export const login = async (req, res, next) => {
     }
     const token = jwt.sign({
       userId: user._id.toString(),
-      email: user.email
+      email: user.email,
+      role: user.role
     }, process.env.JWT_SECRET, {
       expiresIn: "24h",
     });
@@ -74,6 +76,7 @@ export const login = async (req, res, next) => {
         id: user._id.toString(),
         name: user.name,
         email: user.email,
+        role: user.role
       }
     });
   } catch (error) {

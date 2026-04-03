@@ -13,16 +13,19 @@ export interface LoginCredentials {
   password: string;
 }
 
-export interface AuthResponse {
-  token: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
+type User= {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
 }
 
-export const login = async (
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+export const loginService = async (
   credentials: LoginCredentials,
 ): Promise<AuthResponse> => {
   try {
@@ -32,18 +35,18 @@ export const login = async (
     );
     return response.data;
   } catch (error) {
-    const err = error as AxiosError<any>;
+    const err = error as AxiosError<{ message?: string }>;
     throw new Error(err.response?.data?.message || err.message, {
       cause: error,
     });
   }
 };
 
-export const register = async (
+export const registerService = async (
   credentials: RegisterCredentials,
 ): Promise<AuthResponse> => {
   try {
-    const response = await axios.post(
+    const response = await axios.post<AuthResponse>(
       `${API_BASE_URL}/api/auth/register`,
       credentials,
     );

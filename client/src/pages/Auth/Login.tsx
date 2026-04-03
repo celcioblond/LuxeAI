@@ -1,12 +1,16 @@
 import { useState } from 'react';
-import { login } from '../../services/auth';
+import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
+
+  const authContext = useAuth();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSucces] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -22,23 +26,30 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const response = await login({ email, password });
-      const { user } = response;
-      console.log(user.name);
-      console.log(user.email);
+      await authContext?.login({ email, password });
       setEmail('');
       setPassword('');
       setLoading(false);
+      setSucces(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed');
       setLoading(false);
+      setSucces(false);
       console.log(err);
     }
   };
 
   return (
     <>
-      {loading ? (
+      {success ? (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
+          <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md flex flex-col items-center gap-4">
+            <h1 className="text-2xl font-bold text-cyan-500 tracking-wide">
+              Login Successful!
+            </h1>
+          </div>
+        </div>
+      ) : loading ? (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
           <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md flex flex-col items-center gap-6">
             <div className="w-14 h-14 rounded-full border-4 border-teal-200 border-t-cyan-500 animate-spin" />

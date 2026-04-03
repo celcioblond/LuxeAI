@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { register } from '../../services/auth';
 import { validateEmail, validatePassword } from '../../utils/formValidations';
+import { useAuth } from '../../context/AuthContext';
+
 
 const Register = () => {
+  const authContext = useAuth();
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,11 +34,7 @@ const Register = () => {
 
     try {
       setLoading(true);
-
-      const response = await register({ name, email, password });
-      const { user } = response;
-      console.log(user.name);
-      console.log(user.email);
+      await authContext?.register({name, email, password})
       setName('');
       setEmail('');
       setPassword('');
@@ -128,7 +127,6 @@ const Register = () => {
                 </p>
               </div>
 
-              {/* Password Field */}
               <div className="mb-8">
                 <label
                   htmlFor="password"
