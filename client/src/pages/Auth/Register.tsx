@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { validateEmail, validatePassword } from '../../utils/formValidations';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 
 const Register = () => {
@@ -54,6 +54,10 @@ const Register = () => {
             <h1 className="text-2xl font-bold text-cyan-500 tracking-wide">
               Registered Successfully!
             </h1>
+            <a
+              href="/login"
+              className="text-cyan-500 font-medium hover:underline"
+            >Login</a>
           </div>
         </div>
       ) : loading ? (

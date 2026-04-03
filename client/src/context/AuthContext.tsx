@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { loginService, registerService } from '../services/auth';
 
 interface LoginCredentials{
@@ -29,7 +29,7 @@ type AuthContextRes = {
   isAdmin: () => boolean;
 }
 
-const AuthContext = createContext<AuthContextRes | null>(null);
+export const AuthContext = createContext<AuthContextRes | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -91,6 +91,3 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return <AuthContext.Provider value={data}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-}

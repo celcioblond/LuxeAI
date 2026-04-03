@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 const Login = () => {
 
@@ -47,6 +47,18 @@ const Login = () => {
             <h1 className="text-2xl font-bold text-cyan-500 tracking-wide">
               Login Successful!
             </h1>
+            <a
+              href="/admin-dashboard"
+              className="text-cyan-500 font-medium hover:underline"
+            >
+              Admin Dashboard
+            </a>
+            <a 
+              href="/home"
+              className="text-cyan-500 font-medium hover:underline"
+              >
+                Home Page
+              </a>
           </div>
         </div>
       ) : loading ? (
@@ -125,7 +137,7 @@ const Login = () => {
               </div>
 
               <p className="text-center text-sm text-gray-400">
-                Don't have an account? 
+                Don't have an account?
                 <a
                   href="/register"
                   className="text-cyan-500 font-medium hover:underline"
