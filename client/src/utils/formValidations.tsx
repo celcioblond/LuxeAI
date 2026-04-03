@@ -1,15 +1,10 @@
-export const isEmail = (email : string): boolean =>{
-  return email.includes("@");
-}
+const EMAIL_REGEX = /^[a-zA-Z0-9]+([._%+-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-export const isNotEmpty = (value: string): boolean => {
-  return value.trim() !== '';
-}
+export const validateEmail = (email: string): boolean => {
+  return EMAIL_REGEX.test(email);
+};
 
-export const hasMinLength = (value: string, minLength: number): boolean => {
-  return value.length > minLength;
-}
-
-export const isEqualToOtherValue = (password: string, password2: string): boolean => {
-  return password === password2;
-}
+export const validatePassword = (password: string): boolean => {
+  return PASSWORD_REGEX.test(password);
+};
