@@ -54,7 +54,7 @@ const Login = () => {
               Admin Dashboard
             </a>
             <a 
-              href="/home"
+              href="/homepage"
               className="text-cyan-500 font-medium hover:underline"
               >
                 Home Page

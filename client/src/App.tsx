@@ -8,6 +8,8 @@ import Homepage from './pages/Core/Homepage';
 import Register from './pages/Auth/Register';
 import Login from './pages/Auth/Login';
 import { AuthProvider } from './context/AuthContext';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import AdminRoute from './components/AdminRoute';
 
 const App = () => {
   return (
@@ -17,6 +19,9 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/homepage" element={<Homepage />} />
           <Route path="/login" element={<Login />} />
+          <Route element={<AdminRoute />}>
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          </Route>
           <Route path="/" element={<Navigate to="/homepage" />} />
         </Routes>
       </AuthProvider>
