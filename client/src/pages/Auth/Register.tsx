@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { validateEmail, validatePassword } from '../../utils/formValidations';
 import { useAuth } from '../../hooks/useAuth';
+import toast from 'react-hot-toast';
 
 
 const Register = () => {
@@ -10,12 +11,11 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const isValidEmail = validateEmail(email);
-  const isValidPassword = validatePassword(password);
-
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+
+  const isValidEmail = validateEmail(email);
+  const isValidPassword = validatePassword(password);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -31,45 +31,25 @@ const Register = () => {
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-
     try {
+      toast.loading('Registering...', { duration: 4000, position: 'top-right' });
       setLoading(true);
-      await authContext?.register({name, email, password})
+
+      await authContext?.register({ name, email, password });
       setName('');
       setEmail('');
       setPassword('');
       setLoading(false);
-      setSuccess(true);
+      toast.success('Registered successfully!', { duration: 3000, position: 'top-right' });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Registration failed');
       setLoading(false);
+      toast.error(err instanceof Error ? err.message : 'Registration failed', { duration: 4000, position: 'top-right' });
     }
   };
 
   return (
     <>
-      {success ? (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
-          <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md flex flex-col items-center gap-4">
-            <h1 className="text-2xl font-bold text-cyan-500 tracking-wide">
-              Registered Successfully!
-            </h1>
-            <a
-              href="/login"
-              className="text-cyan-500 font-medium hover:underline"
-            >Login</a>
-          </div>
-        </div>
-      ) : loading ? (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
-          <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md flex flex-col items-center gap-6">
-            <div className="w-14 h-14 rounded-full border-4 border-teal-200 border-t-cyan-500 animate-spin" />
-            <p className="text-cyan-500 font-bold tracking-wide text-lg">
-              Loading...
-            </p>
-          </div>
-        </div>
-      ) : (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
           <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md relative">
             <form onSubmit={handleSubmit}>
@@ -171,7 +151,7 @@ const Register = () => {
               <div className="mb-5">
                 <button
                   type="submit"
-                  disabled={!isValidEmail || !isValidPassword}
+                  disabled={!isValidEmail || !isValidPassword || loading}
                   className="w-full py-3 rounded-lg bg-gradient-to-r from-teal-400 to-cyan-500 text-white font-bold tracking-widest uppercase text-sm hover:from-teal-500 hover:to-cyan-600 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
                 >
                   Register
@@ -190,7 +170,6 @@ const Register = () => {
             </form>
           </div>
         </div>
-      )}
     </>
   );
 };

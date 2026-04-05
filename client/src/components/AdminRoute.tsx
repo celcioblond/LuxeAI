@@ -6,6 +6,10 @@ const AdminRoute = () => {
   const auth = useAuth();
   const location = useLocation();
 
+  if (auth?.loading){
+    return null;
+  } 
+
   if (!auth?.token || !auth?.isAdmin()) {
     return <Navigate to="/login" state={{from: location}}  replace />
   }

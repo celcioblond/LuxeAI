@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import toast from "react-hot-toast";
 
 const Login = () => {
 
@@ -10,7 +11,7 @@ const Login = () => {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSucces] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -22,20 +23,21 @@ const Login = () => {
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-
     try {
+      toast.loading("Signing in...", { duration: 4000, position: "top-right" });
       setLoading(true);
 
       await authContext?.login({ email, password });
       setEmail('');
       setPassword('');
       setLoading(false);
-      setSucces(true);
+      setSuccess(true);
+      toast.success("Login successful!", { duration: 3000, position: "top-right" });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed');
       setLoading(false);
-      setSucces(false);
-      console.log(err);
+      setSuccess(false);
+      toast.error(err instanceof Error ? err.message : 'Login failed', { duration: 4000, position: "top-right" });
     }
   };
 
@@ -53,12 +55,12 @@ const Login = () => {
             >
               Admin Dashboard
             </a>
-            <a 
+            <a
               href="/homepage"
               className="text-cyan-500 font-medium hover:underline"
-              >
-                Home Page
-              </a>
+            >
+              Home Page
+            </a>
           </div>
         </div>
       ) : loading ? (

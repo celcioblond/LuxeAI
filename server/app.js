@@ -18,9 +18,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, "../.env") });
 
 const PORT = process.env.PORT;
+const FRONT_URL = process.env.FRONT_URL;
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: FRONT_URL,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  headers: [
+    "Content-Type",
+    "Authorization",
+  ],
+  credentials: true,
+}));
 app.use(morgan("dev"));
 app.use(express.json());
 

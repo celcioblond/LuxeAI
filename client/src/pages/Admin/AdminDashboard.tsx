@@ -1,6 +1,18 @@
+import useAuth from "../../hooks/useAuth";
+
 const AdminDashboard = () => {
+  const {user} = useAuth();
+
   return (
-    <h1>admin dashboard</h1>
+    <>
+      <header>
+        <nav>
+          <div>
+            <h1>Welcome {user.name}</h1>
+          </div>
+        </nav>
+      </header>
+    </>
   )
 }
 

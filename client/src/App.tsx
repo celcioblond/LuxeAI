@@ -10,6 +10,7 @@ import Login from './pages/Auth/Login';
 import { AuthProvider } from './context/AuthContext';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminRoute from './components/AdminRoute';
+import {Toaster } from "react-hot-toast";
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/" element={<Navigate to="/homepage" />} />
         </Routes>
       </AuthProvider>
+      <Toaster /> 
     </Router>
   );
 };
