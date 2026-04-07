@@ -1,9 +1,9 @@
 GET http://localhost:3000/api/products/
 
-###
+### GET PRODUCT POR ID
 GET http://localhost:3000/api/products/1
 
-###
+### AGREGAR PRODUCTO
 POST http://localhost:3000/api/products
 Content-Type: application/json
 
@@ -11,7 +11,8 @@ Content-Type: application/json
   "name": "Snapback",
   "description": "White sox hat",
   "price": 67,
-  "imageUrl": "url/example"
+  "discountPrice": 10,
+  "imageUrl": "https://res.cloudinary.com/dvhcop5zx/image/upload/v1775483456/Death_Note_snapback_cap_close-up_fcr8dz.png" 
 } 
 
 ###
