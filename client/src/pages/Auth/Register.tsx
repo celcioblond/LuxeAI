@@ -13,6 +13,7 @@ const Register = () => {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const isValidEmail = validateEmail(email);
   const isValidPassword = validatePassword(password);
@@ -40,16 +41,48 @@ const Register = () => {
       setEmail('');
       setPassword('');
       setLoading(false);
+      setSuccess(true);
       toast.success('Registered successfully!', { duration: 3000, position: 'top-right' });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Registration failed');
       setLoading(false);
+      setSuccess(false);
       toast.error(err instanceof Error ? err.message : 'Registration failed', { duration: 4000, position: 'top-right' });
     }
   };
 
   return (
     <>
+      {success ? (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
+          <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md flex flex-col items-center gap-4">
+            <h1 className="text-2xl font-bold text-cyan-500 tracking-wide">
+              Registration Successful!
+            </h1>
+            <a
+              href="/login"
+              className="text-cyan-500 font-medium hover:underline"
+            >
+              Log in
+            </a>
+            <a
+              href="/homepage"
+              className="text-cyan-500 font-medium hover:underline"
+            >
+              Home Page
+            </a>
+          </div>
+        </div>
+      ) : loading ? (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
+          <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md flex flex-col items-center gap-6">
+            <div className="w-14 h-14 rounded-full border-4 border-teal-200 border-t-cyan-500 animate-spin" />
+            <p className="text-cyan-500 font-bold tracking-wide text-lg">
+              Loading...
+            </p>
+          </div>
+        </div>
+      ) : (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
           <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md relative">
             <form onSubmit={handleSubmit}>
@@ -170,6 +203,7 @@ const Register = () => {
             </form>
           </div>
         </div>
+      )}
     </>
   );
 };

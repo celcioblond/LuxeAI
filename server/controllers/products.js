@@ -1,38 +1,49 @@
 import Product from "../models/productModel.js";
 import HttpError from "../models/http-error.js";
 
-export const getAllProducts = async (req, res, next) => {
-  const { category, minPrice, maxPrice, sort, page = 1, limit = 20 } = req.query;
 
-  const filter = { isAvailable: true };
-  if (category) filter.category = category;
-  if (minPrice || maxPrice) {
-    filter.price = {};
-    if (minPrice) filter.price.$gte = Number(minPrice);
-    if (maxPrice) filter.price.$lte = Number(maxPrice);
-  }
-
-  const sortMap = {
-    price_asc:  { price: 1 },
-    price_desc: { price: -1 },
-    newest:     { releaseDate: -1 },
-    rating:     { averageRating: -1 },
-  };
-  const sortOption = sortMap[sort] || { createdAt: -1 };
-  const skip = (Number(page) - 1) * Number(limit);
-
-  let products, total;
+export const getAllProducts = async(req, res, next) => {
   try {
-    [products, total] = await Promise.all([
-      Product.find(filter).sort(sortOption).skip(skip).limit(Number(limit)),
-      Product.countDocuments(filter),
-    ]);
-  } catch (err) {
-    return next(new HttpError("Failed to fetch products.", 500));
+    const products = await Product.find();
+    res.status(200).json({
+      products
+    })
+  } catch(error){
+    return next(new HttpError("Error getting all products"), 500);
   }
+}
+// export const getAllProducts = async (req, res, next) => {
+//   const { category, minPrice, maxPrice, sort, page = 1, limit = 20 } = req.query;
 
-  res.json({ total, page: Number(page), pages: Math.ceil(total / limit), products });
-};
+//   const filter = { isAvailable: true };
+//   if (category) filter.category = category;
+//   if (minPrice || maxPrice) {
+//     filter.price = {};
+//     if (minPrice) filter.price.$gte = Number(minPrice);
+//     if (maxPrice) filter.price.$lte = Number(maxPrice);
+//   }
+
+//   const sortMap = {
+//     price_asc:  { price: 1 },
+//     price_desc: { price: -1 },
+//     newest:     { releaseDate: -1 },
+//     rating:     { averageRating: -1 },
+//   };
+//   const sortOption = sortMap[sort] || { createdAt: -1 };
+//   const skip = (Number(page) - 1) * Number(limit);
+
+//   let products, total;
+//   try {
+//     [products, total] = await Promise.all([
+//       Product.find(filter).sort(sortOption).skip(skip).limit(Number(limit)),
+//       Product.countDocuments(filter),
+//     ]);
+//   } catch (err) {
+//     return next(new HttpError("Failed to fetch products.", 500));
+//   }
+
+//   res.json({ total, page: Number(page), pages: Math.ceil(total / limit), products });
+// };
 
 
 export const getProductById = async (req, res, next) => {

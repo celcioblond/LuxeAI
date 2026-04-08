@@ -91,4 +91,4 @@ productSchema.virtual("effectivePrice").get(function () {
 
 const Product = mongoose.model("Product", productSchema)
 
-export default Product
+export default Product  

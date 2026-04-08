@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import { loginService, registerService } from '../services/auth';
+import { loginService, registerService } from '../services/authService';
 
 interface LoginCredentials{
   email: string;

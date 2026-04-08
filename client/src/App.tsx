@@ -8,6 +8,7 @@ import Homepage from './pages/Core/Homepage';
 import Register from './pages/Auth/Register';
 import Login from './pages/Auth/Login';
 import { AuthProvider } from './context/AuthContext';
+import { ProductProvider } from './context/ProductContext';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminRoute from './components/AdminRoute';
 import {Toaster } from "react-hot-toast";
@@ -16,6 +17,7 @@ const App = () => {
   return (
     <Router>
       <AuthProvider>
+        <ProductProvider>
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/homepage" element={<Homepage />} />
@@ -25,6 +27,7 @@ const App = () => {
           </Route>
           <Route path="/" element={<Navigate to="/homepage" />} />
         </Routes>
+        </ProductProvider>
       </AuthProvider>
       <Toaster /> 
     </Router>
