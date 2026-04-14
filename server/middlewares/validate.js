@@ -1,5 +1,4 @@
 import { body, param, query, validationResult } from "express-validator";
-import HttpError from "../models/http-error.js";
 
 export const validate = (req, _res, next) => {
   const errors = validationResult(req);

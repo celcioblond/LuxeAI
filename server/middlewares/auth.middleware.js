@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import User from "../models/userModel.js";
 import HttpError from "../models/http-error.js";
 
 export const protect = async (req, res, next) => {
@@ -23,10 +22,17 @@ export const protect = async (req, res, next) => {
   }
 }
 
-
 export const isAdmin = (req, res, next) => {
-  if (req.user.role !== "admin") {
-    return next(new HttpError("Access denied. Admins only.", 403));
+  const role = req.user.role;
+  if (role !== "admin") {
+    return next(new HttpError("Admins only", 403));
   }
   next();
-};
+}
+
+// export const isAdmin = (req, res, next) => {
+//   if (req.user.role !== "admin") {
+//     return next(new HttpError("Access denied. Admins only.", 403));
+//   }
+//   next();
+// };

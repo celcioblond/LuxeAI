@@ -1,21 +1,22 @@
+###GET ALL PRODUCTS
 GET http://localhost:3000/api/products/
 
 ### GET PRODUCT POR ID
 GET http://localhost:3000/api/products/1
 
-### AGREGAR PRODUCTO
+### AGREGAR NUEVO PRODUCTO
 POST http://localhost:3000/api/products
 Content-Type: application/json
 
 {
-  "name": "Snapback",
-  "description": "White sox hat",
-  "price": 67,
-  "discountPrice": 10,
+  "name": "Death note snapback",
+  "price": 50,
+  "description": "Gorra deathnote con el logo al frente",
+  "stock": 10,
   "imageUrl": "https://res.cloudinary.com/dvhcop5zx/image/upload/v1775483456/Death_Note_snapback_cap_close-up_fcr8dz.png" 
-} 
+}
 
-###
+### REGISTRAR
 POST http://localhost:3000/api/auth/register
 Content-Type: application/json 
 
@@ -25,7 +26,7 @@ Content-Type: application/json
   "password": "backy2026"
 }
 
-###
+### LOGIN 
 POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 

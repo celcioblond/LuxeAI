@@ -20,7 +20,8 @@ router.get("/",        getAllProducts);
 router.get("/:id",     getProductById);
 
 // Admin only
-router.post("/",       protect, isAdmin, createProductRules, validate, addProduct);
+// router.post("/", createProductRules, validate, addProduct);
+router.post("/", addProduct);
 router.patch("/:id",   protect, isAdmin, updateProductRules, validate, updateProduct);
 router.delete("/:id",  protect, isAdmin, deleteProduct);
 
