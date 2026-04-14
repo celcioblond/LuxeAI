@@ -12,7 +12,7 @@ const Homepage = () => {
         Homepage
       </h1>
       <p className="text-center mb-4">Elige tu product</p>
-      <div>
+      <div className="flex">
         {loadingProducts ? (
           <div className="loading loading spinner">
             <p className="">Fetching products</p>

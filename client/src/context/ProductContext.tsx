@@ -15,7 +15,7 @@ export const ProductContext = createContext<ProductContextType | null>(null);
 
 export const ProductProvider = ({children}: { children: React.ReactNode }) => {
 
-  const [products, setProducts] = useState<string[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [product, setProduct] = useState({});
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState(false);

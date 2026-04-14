@@ -7,11 +7,10 @@ import {
   updateOrderStatus,
 } from "../controllers/orders.js"
 import { protect, isAdmin } from "../middlewares/auth.middleware.js"
-import { validate, createOrderRules } from "../middlewares/validate.js"
 
 const router = express.Router()
 
-router.post("/",              protect,          createOrderRules, validate, createOrder)
+router.post("/",              protect, createOrder)
 router.get("/my-orders",      protect,          getMyOrders)
 router.get("/:id",            protect,          getOrderById)
 router.patch("/:id/cancel",   protect,          cancelOrder)

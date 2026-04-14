@@ -9,12 +9,25 @@ POST http://localhost:3000/api/products
 Content-Type: application/json
 
 {
-  "name": "Death note snapback",
-  "price": 50,
-  "description": "Gorra deathnote con el logo al frente",
-  "stock": 10,
-  "imageUrl": "https://res.cloudinary.com/dvhcop5zx/image/upload/v1775483456/Death_Note_snapback_cap_close-up_fcr8dz.png" 
+  "name": "Goated pre",
+  "price": 6969,
+  "description": "PR on everything",
+  "stock": 2,
+  "imageUrl": "https://res.cloudinary.com/dvhcop5zx/image/upload/v1776192092/Bold_pre-workout_supplement_packaging_close-up_aiycxg.png" 
 }
+
+### ACTUALIZAR PRODUCT
+PATCH  http://localhost:3000/api/products/69ddef94ce91fa9868b7d000
+Content-Type: application/json 
+
+{
+  "price": 69
+}
+
+
+### DELETE PRODUCT
+DELETE http://localhost:3000/api/products/
+
 
 ### REGISTRAR
 POST http://localhost:3000/api/auth/register
