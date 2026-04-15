@@ -9,19 +9,19 @@ POST http://localhost:3000/api/products
 Content-Type: application/json
 
 {
-  "name": "Goated pre",
-  "price": 6969,
-  "description": "PR on everything",
-  "stock": 2,
-  "imageUrl": "https://res.cloudinary.com/dvhcop5zx/image/upload/v1776192092/Bold_pre-workout_supplement_packaging_close-up_aiycxg.png" 
+  "name": "Low cortisol enjoyer",
+  "price": 274,
+  "description": "Huge ass teddy bear to reduce your cortisol levels",
+  "stock": 9,
+  "imageUrl": "https://res.cloudinary.com/dvhcop5zx/image/upload/v1776231724/Giant_teddy_bear_low_cortisol_ctc34t.png" 
 }
 
 ### ACTUALIZAR PRODUCT
-PATCH  http://localhost:3000/api/products/69ddef94ce91fa9868b7d000
+PATCH  http://localhost:3000/api/products/69df2572665656011ca8f803
 Content-Type: application/json 
 
 {
-  "price": 69
+  "imageUrl": "https://res.cloudinary.com/dvhcop5zx/image/upload/v1776232035/ChatGPT_Image_Apr_15_2026_12_46_58_AM_vjfcam.png"
 }
 
 

@@ -11,7 +11,7 @@ export const getProducts = async () => {
   }
 }
 
-export const getProduct = async(id: number) => {
+export const getProduct = async(id: string) => {
   try {
     const response = await axios.get(`${BACK_URL}/api/products/${id}`);
     return response.data;

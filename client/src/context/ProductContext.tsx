@@ -5,7 +5,7 @@ type ProductContextType = {
   products: any[];
   product: any;
   getProducts: () => Promise<void>;
-  getProduct: (id: number) => Promise<void>;
+  getProduct: (id: string) => Promise<void>;
   loadingProducts: boolean;
   loadingProduct: boolean;
   error: string;
@@ -23,17 +23,21 @@ export const ProductProvider = ({children}: { children: React.ReactNode }) => {
 
   const getProducts = useCallback(async () => {
     try {
+      setLoadingProducts(true);
       const data = await fetchProducts();
       setProducts(data.products);
+      setLoadingProducts(false);
     } catch(error) {
       setError("Failed to fetch products");
     }
   }, []);
 
-  const getProduct = useCallback(async (id: number) => {
+  const getProduct = useCallback(async (id: string) => {
     try {
+      setLoadingProduct(true);
       const fetchedProduct = await fetchProduct(id);
       setProduct(fetchedProduct.product);
+      setLoadingProduct(false);
     } catch(error) {
       setError("Failed to fetch product");
     }

@@ -5,6 +5,7 @@ import {
   Navigate,
 } from 'react-router-dom';
 import Homepage from './pages/Core/Homepage';
+import ProductDetails from './pages/Core/ProductDetails';
 import Register from './pages/Auth/Register';
 import Login from './pages/Auth/Login';
 import { AuthProvider } from './context/AuthContext';
@@ -21,6 +22,7 @@ const App = () => {
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/homepage" element={<Homepage />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/login" element={<Login />} />
           <Route element={<AdminRoute />}>
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
