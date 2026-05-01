@@ -5,7 +5,6 @@ const Homepage = () => {
 
   const {products, loadingProducts } = useProducts();
 
-  console.log(products);
   return (
     <div>
       <div className="flex-1 pt-2 mb-1.5">
@@ -14,7 +13,7 @@ const Homepage = () => {
         </h1>
       </div>
       <p className="text-center mb-4">Shop below</p>
-      <div className="flex">
+      <div className="flex items-center justify-center min-h-screen bg-slate-200 gap-5 space-x-5">
         {loadingProducts ? (
           <div className="loading loading spinner">
             <p className="">Fetching products</p>

@@ -1,5 +1,15 @@
 import mongoose from "mongoose"
 
+// const cartSchema = new mongoose.Schema(
+//   {
+//     product: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       ref: "Product",
+//       required: true
+//     }
+//   }
+// )
+
 const cartItemSchema = new mongoose.Schema(
   {
     product: {
