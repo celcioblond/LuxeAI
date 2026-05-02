@@ -1,6 +1,7 @@
 import useProducts from '../../hooks/useProducts';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useEffect } from 'react';
+import { FaShoppingCart } from 'react-icons/fa';
 
 const ProductDetails = () => {
   const { getProduct, product, loadingProduct } = useProducts();
@@ -20,9 +21,17 @@ const ProductDetails = () => {
 
   return (
     <div className="min-h-screen bg-slate-300">
-      <h1 className="text-7xl text-white bg-blue-900 p-8 text-center font-bold tracking-tight">
-        {product.name}
-      </h1>
+      <header className="flex bg-blue-900 justify-around items-center p-3">
+        <button className="bg-black w-20 h-12 p-3 rounded-2xl shadow-2xl text-white hover:bg-amber-500">
+          <Link to="/homepage">Home</Link>
+        </button>
+        <h1 className="text-7xl text-white p-8 text-center font-bold tracking-tight">
+          {product.name}
+        </h1>
+        <div className="rounded-full w-12 h-12 bg-white flex items-center justify-center shadow-md">
+          <FaShoppingCart size={24} />
+        </div>
+      </header>
 
       <div className="flex items-center justify-center space-x-4 m-4">
         {/* Image */}
@@ -35,9 +44,9 @@ const ProductDetails = () => {
         </div>
 
         {/* Description + Button */}
-        <div className="w-1/2 m-4 flex flex-col items-center justify-between gap-10">
+        <div className="w-1/2 m-4 flex flex-col items-center justify-center gap-10">
           <p className="p-4 m-6 text-4xl">{product.description}</p>
-
+          <p className="p-3 text-left text-3xl font-bold">{`$${product.price}`}</p>
           {product.stock === 0 ? (
             <p className="text-red-600 font-semibold">Out of stock</p>
           ) : (

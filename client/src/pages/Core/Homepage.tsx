@@ -1,22 +1,17 @@
 import useProducts from "../../hooks/useProducts";
 import CardProduct from "../../components/CardProduct";
+import MainNavigation from "../../components/Navbar/MainNavigation";
 
 const Homepage = () => {
 
   const {products, loadingProducts } = useProducts();
 
   return (
-    <div>
-      <div className="flex-1 pt-2 mb-1.5">
-        <h1 className="text-4xl font-bold text-center mt-7 mb-2 text-purple uppercase">
-          E-commerce
-        </h1>
-      </div>
-      <p className="text-center mb-4">Shop below</p>
+    <MainNavigation>
       <div className="flex items-center justify-center min-h-screen bg-slate-200 gap-5 space-x-5">
         {loadingProducts ? (
           <div className="loading loading spinner">
-            <p className="">Fetching products</p>
+            <p className="text-gray mt-15">Fetching products</p>
           </div>
         ) : (
           products.map((product) => (
@@ -24,7 +19,7 @@ const Homepage = () => {
           ))
         )}
       </div>
-    </div>
+    </MainNavigation>
   );
 }
 

@@ -1,56 +1,30 @@
 import mongoose from "mongoose"
 
-// const cartSchema = new mongoose.Schema(
-//   {
-//     product: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "Product",
-//       required: true
-//     }
-//   }
-// )
-
-const cartItemSchema = new mongoose.Schema(
-  {
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-      min: [1, "Quantity must be at least 1"],
-      default: 1,
-    },
-    size: {
-      type: String,
-      enum: ["XS", "S", "M", "L", "XL", "XXL"],
-    },
-    color: {
-      type: String,
-      trim: true,
-    },
-  },
-)
-
-
 const cartSchema = new mongoose.Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
-      unique: true,  // one cart per user
+      required: false,
     },
-    items: [cartItemSchema],
+    products: [
+      {
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          min: 1,
+          default: 1,
+        },
+      },
+    ],
   },
-  { timestamps: true }
+  {timeStamps: true}
 )
 
-// Virtual — total number of items in cart
-cartSchema.virtual("itemCount").get(function () {
-  return this.items.reduce((sum, item) => sum + item.quantity, 0)
-})
-
-export default mongoose.model("Cart", cartSchema)
+const Cart = new mongoose.model("Cart", cartSchema);
+export default Cart;

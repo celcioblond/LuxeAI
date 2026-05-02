@@ -71,7 +71,7 @@ export const addToCart = async (req, res, next) => {
   res.json({ cart });
 };
 
-export const updateQuantity = async (req, res, next) => {
+export const updateCart = async (req, res, next) => {
   const { quantity } = req.body;
 
   if (!quantity || quantity < 1) {
