@@ -28,8 +28,10 @@ const ProductDetails = () => {
         <h1 className="text-7xl text-white p-8 text-center font-bold tracking-tight">
           {product.name}
         </h1>
-        <div className="rounded-full w-12 h-12 bg-white flex items-center justify-center shadow-md">
-          <FaShoppingCart size={24} />
+        <div className="rounded-full w-12 h-12 bg-white flex items-center justify-center shadow-md transition-transform duration-300 hover:scale-110 hover:shadow-lg">
+          <Link to="/cart">
+            <FaShoppingCart size={24} />
+          </Link>
         </div>
       </header>
 

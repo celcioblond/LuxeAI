@@ -8,6 +8,7 @@ import Homepage from './pages/Core/Homepage';
 import ProductDetails from './pages/Core/ProductDetails';
 import Register from './pages/Auth/Register';
 import Login from './pages/Auth/Login';
+import Cart from './pages/Core/Cart';
 import { AuthProvider } from './context/AuthContext';
 import { ProductProvider } from './context/ProductContext';
 import AdminDashboard from './pages/Admin/AdminDashboard';
@@ -24,6 +25,7 @@ const App = () => {
           <Route path="/homepage" element={<Homepage />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/cart" element={<Cart />} />
           <Route element={<AdminRoute />}>
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
           </Route>
