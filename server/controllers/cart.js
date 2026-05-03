@@ -144,7 +144,18 @@ export const getCartTotal = async(req, res, next) => {
 
 export const clearCart = async(req, res, next) => {
   try {
-    connsole.log(req);
+    const {userId} = req.params;
+    if(!userId) {
+      return next(new HttpError("UserId is required", 400));
+    }
+    
+    const cart = await Cart.findOne({userId});
+    if(!cart) {
+      return next(new HttpError(`Cart was not found for user with id: ${userId}`, 500));
+    }
+    cart.products = [];
+    await cart.save();
+    res.status(200).json({message: "Cart cleared successfully", cart});
   } catch(error) {
     return next (new HttpError(`${error.message}`, 500));
   }

@@ -77,3 +77,6 @@ DELETE http://localhost:3000/api/cart/deleteProduct/69d59b8b40c16f068bed7e58/69d
 
 ###GET CART TOTAL
 GET http://localhost:3000/api/cart/total/69d59b8b40c16f068bed7e58
+
+###CLEAR CART
+DELETE http://localhost:3000/api/cart/clearCart/69d59b8b40c16f068bed7e58
