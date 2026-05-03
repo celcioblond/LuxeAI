@@ -23,8 +23,8 @@ const cartSchema = new mongoose.Schema(
       },
     ],
   },
-  {timeStamps: true}
+  {timestamps: true}
 )
 
-const Cart = new mongoose.model("Cart", cartSchema);
+const Cart = mongoose.model("Cart", cartSchema);
 export default Cart;

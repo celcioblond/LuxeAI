@@ -25,5 +25,8 @@
     "nodemon": "^3.1.14",
     "uuid": "^13.0.0",
     "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/mongoose": "^5.11.96"
   }
 }

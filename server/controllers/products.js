@@ -2,6 +2,7 @@ import Product from "../models/productModel.js";
 import HttpError from "../models/http-error.js";
 import { productSchema } from "../schemas/productSchema.js";
 import {ZodError} from 'zod';
+import Cart from "../models/cartModel.js";
 
 export const getAllProducts = async(req, res, next) => {
   try {
@@ -82,3 +83,46 @@ export const deleteProduct = async(req, res, next) => {
   }
 }
 
+export const clearCart = async(req, res, next) => {
+  try {
+    const {userId} = req.params;
+    const {productId} = req.body;
+
+    //Verificar usuario 
+    if(!userId || !productId) {
+      return next(new HttpError("User or product not found", 404));
+    }
+
+    const cart = await Cart.findOne({userId});
+    if(!cart) {
+      return next(new HttpError("Cart not found", 404));
+    }
+    cart.products = [];
+    await cart.save();
+    res.status(200).json({cart});
+
+  } catch(error) {
+    return next(new HttpError(`${error.message}`, 500));
+  }
+}
+
+export const getCartTotal = async(req, res, next) => {
+  try {
+    const {userId} = req.params;
+    if(!userId){
+      return next(new HttpError("User not found", 500));
+    }
+
+    const cart = await Cart.findOne({userId});
+
+    if(!cart) {
+      return next (new HttpError("Cart not found", 404));
+    }
+
+    const total = cart.products.reduce((product, acc) => product.quantity + quantity);
+    res.status(200).json({total});
+
+  } catch(error) {
+    return next(new HttpError(`${error.message}`, 500));
+  }
+}
