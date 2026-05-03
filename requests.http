@@ -47,3 +47,30 @@ Content-Type: application/json
   "email": "will@hotmail.com",
   "password": "houston2027"
 }
+
+### ADD PRODUCT TO CART
+
+POST http://localhost:3000/api/cart/addToCart
+Content-Type: application/json 
+
+{
+  "userId" : "69d59b8b40c16f068bed7e58",
+  "productId": "69ddef94ce91fa9868b7d000",
+  "quantity": 1
+}
+
+### GET CART
+GET http://localhost:3000/api/cart/getCart/69d59b8b40c16f068bed7e58
+
+###UPDATE CART
+PATCH http://localhost:3000/api/cart/updateCart/69d59b8b40c16f068bed7e58
+Content-Type: application/json
+
+{
+  "userId": "69d59b8b40c16f068bed7e58",
+  "productId": "69ddef94ce91fa9868b7d000",
+  "quantity": -1
+}
+
+###DELETE PRODUCT FROM CART
+DELETE http://localhost:3000/api/cart/deleteProduct/69d59b8b40c16f068bed7e58/69ddef94ce91fa9868b7d000
