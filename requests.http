@@ -74,3 +74,6 @@ Content-Type: application/json
 
 ###DELETE PRODUCT FROM CART
 DELETE http://localhost:3000/api/cart/deleteProduct/69d59b8b40c16f068bed7e58/69ddef94ce91fa9868b7d000
+
+###GET CART TOTAL
+GET http://localhost:3000/api/cart/total/69d59b8b40c16f068bed7e58

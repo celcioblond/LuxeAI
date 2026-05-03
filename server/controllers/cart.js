@@ -127,16 +127,16 @@ export const deleteProduct = async(req, res, next) => {
 export const getCartTotal = async(req, res, next) => {
   try {
     const {userId} = req.params;
-    const {productId, quantity} = req.body;
-
-    if(!userId || !productId) {
-      return next(new HttpError("User or product not found", 404));
-    }
-
-    const cart = await Cart.findOne({userId});
+    const cart = await Cart.findOne({userId}).populate("products.productId");
     if(!cart) {
       return next(new HttpError("Cart was not found", 404));
     }
+
+    const cartTotal = cart.products.reduce((total, p) => {
+      return total + (p.productId.price*p.quantity);
+    }, 0);
+
+    res.status(200).json({cartTotal});
   } catch(error) {
     return next (new HttpError(`${error.message}`, 500));
   }
