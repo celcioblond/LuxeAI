@@ -27,7 +27,9 @@ type AuthContextRes = {
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => void;
   isAdmin: () => boolean;
-}
+  getUserId: () => string;
+  isAuthenticated: () =>  boolean;
+};
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextRes | null>(null);
@@ -80,6 +82,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const getUserId = (): string => {
+    return user?.id;
+  }
+
+  const isAuthenticated = (): bool => {
+    return token ? true : false;
+  }
+
   const data = {
     user,
     token,
@@ -88,6 +98,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     register,
     logout,
     isAdmin,
+    getUserId,
+    isAuthenticated,
   };
 
   return <AuthContext.Provider value={data}>{children}</AuthContext.Provider>;

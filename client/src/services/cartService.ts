@@ -7,17 +7,34 @@ interface infoCart{
   quantity: number;
 }
 
-interface user{
-  userId: string;
-}
-
 
 interface userProduct{
   userId: string;
   productId: string;
 }
 
-export const getCartService = async(userId: string) => {
+interface CartProduct{
+  productId: {
+    _id: string;
+    name: string;
+    price: number;
+    description: string;
+    stock: number;
+    imageUrl: string;
+  };
+  quantity: number;
+  _id: string;
+}
+
+interface Cart {
+  _id: string;
+  userId: string;
+  products: CartProduct[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const getCartService = async(userId: string): Promise<Cart> => {
   try {
     const response = await axios.get(`${BACKEND_URL}/getCart/${userId}`);
     return response.data;
@@ -35,7 +52,7 @@ export const addToCartService = async(info: infoCart) => {
   }
 }
 
-export const updateCartService = async(info: infoCart) => {
+export const updateCartService = async(info: infoCart): Promise<Cart> => {
   const {userId, ...body} = info;
   try {
     const response = await axios.put(`${BACKEND_URL}/updateCart/${userId}`, body);
