@@ -6,6 +6,8 @@ const useCart = () => {
   if (!context) {
     throw new Error("useCart must be used within a CartProvider")
   }
+  return context;
 }
 
+export { useCart };
 export default useCart;

@@ -53,7 +53,7 @@ export const login = async (req, res, next) => {
       return next(new HttpError("Email and password required", 400));
     }
 
-    const user = await User.findOne({email});
+    const user = await User.findOne({email}).select('+password');
     if(!user) {
       return next(new HttpError("User was not found", 400));
     }

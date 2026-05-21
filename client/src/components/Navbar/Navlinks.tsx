@@ -1,6 +1,15 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import {useAuth} from "../../hooks/useAuth";
 
 const Navlinks = () => {
+  const {isAuthenticated, logout} = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  }
+
   return (
     <ul className="flex items-center gap-6 list-none">
       <li>
@@ -39,6 +48,14 @@ const Navlinks = () => {
           Checkout
         </NavLink>
       </li>
+
+      {isAuthenticated() && (
+        <li>
+          <button className="text-gray-600 hover:text-black transition-colors"onClick={handleLogout}>
+            Logout
+          </button>
+        </li>
+      )}
     </ul>
   );
 };
