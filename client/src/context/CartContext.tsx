@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
 import useAuth from '../hooks/useAuth';
-import { addToCartService, deleteProductService, getCartService, updateCartService } from '../services/cartService';
+import { addToCartService, deleteProductService, getCartService, updateCartService, clearCartService, getCartTotalService } from '../services/cartService';
 
 interface CartProduct {
   productId: {
@@ -24,7 +24,7 @@ interface Cart {
 }
 
 interface CartContextType {
-  cart: Cart || null;
+  cart: Cart | null;
   quantity: number;
   loading: boolean;
   total: number;
@@ -32,8 +32,11 @@ interface CartContextType {
   addToCart: (productId: string, quantity: number) => Promise<void>;
   removeProductFromCart: (productId: string) => Promise<void>;
   updateQuantity: (productId: string, quantity: number) => Promise<void>;
+  getCartTotal: () => Promise<void>;
+  clearCart: () => Promise<void>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const CartContext = createContext<CartContextType | null>(null);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
@@ -42,9 +45,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [total, setTotal] = useState<number>(0);
 
-  const { user, getUserId, isAuthenticated } = useAuth();
+  const { user, getUserId, isAuthenticated } = useAuth()!;
 
-  //Get cart from backend
   const fetchCart = async () => {
     try {
       setLoading(true);
@@ -52,18 +54,19 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await getCartService(userId);
       setCart(response);
     } catch (error) {
-      console.error(error.message);
+      console.error((error as Error).message);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated()) {
       fetchCart();
     } else {
       setCart(null);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {
@@ -79,7 +82,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setQuantity(newQuantity ?? 0);
   }, [cart]);
 
-  const addToCart = async(productId: string, quantity: number) => {
+  const addToCart = async (productId: string, quantity: number) => {
     try {
       setLoading(true);
       const userId: string = getUserId();
@@ -91,23 +94,23 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  const removeProductFromCart = async(productId: string) => {
+  const removeProductFromCart = async (productId: string) => {
     try {
       setLoading(true);
       const userId: string = getUserId();
-      const info = {userId, productId};
+      const info = { userId, productId };
       await deleteProductService(info);
       await fetchCart();
-    } catch(error) {
+    } catch (error) {
       console.error("Failed to remove product from cart", error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  const updateQuantity = async(productId: string, quantity: number) => {
+  const updateQuantity = async (productId: string, quantity: number) => {
     try {
       if (quantity < 1) {
         console.error("Quantity must at least be one");
@@ -115,17 +118,43 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       }
       setLoading(true);
       const userId: string = getUserId();
-      const info = {userId, productId, quantity};
+      const info = { userId, productId, quantity };
       await updateCartService(info);
       await fetchCart();
-    } catch(error) {
+    } catch (error) {
       console.error("Failed to update the quantity", error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-    const data: CartContextType = {
+  const clearCart = async () => {
+    try {
+      setLoading(true);
+      const userId: string = getUserId();
+      await clearCartService(userId);
+      await fetchCart();
+    } catch (error) {
+      console.error("Failed to clear the cart", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getCartTotal = async () => {
+    try {
+      setLoading(true);
+      const userId: string = getUserId();
+      const finalTotal = await getCartTotalService(userId);
+      setTotal(finalTotal);
+    } catch (error) {
+      console.error("Failed to get the cart total", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const data: CartContextType = {
     cart,
     quantity,
     loading,
@@ -134,7 +163,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     addToCart,
     removeProductFromCart,
     updateQuantity,
-  }; 
+    clearCart,
+    getCartTotal,
+  };
 
   return <CartContext.Provider value={data}>{children}</CartContext.Provider>;
 };

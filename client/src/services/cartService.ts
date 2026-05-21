@@ -1,19 +1,18 @@
 import axios from "axios";
 const BACKEND_URL = import.meta.env.VITE_API_URL;
 
-interface infoCart{
+interface infoCart {
   userId: string;
   productId: string;
   quantity: number;
 }
 
-
-interface userProduct{
+interface userProduct {
   userId: string;
   productId: string;
 }
 
-interface CartProduct{
+interface CartProduct {
   productId: {
     _id: string;
     name: string;
@@ -34,58 +33,61 @@ interface Cart {
   updatedAt: string;
 }
 
-export const getCartService = async(userId: string): Promise<Cart> => {
+const toMessage = (error: unknown) =>
+  error instanceof Error ? error.message : String(error);
+
+export const getCartService = async (userId: string): Promise<Cart> => {
   try {
     const response = await axios.get(`${BACKEND_URL}/getCart/${userId}`);
-    return response.data;
-  } catch(error) {
-    throw new Error(`${error.message}`);
+    return response.data.cart;
+  } catch (error) {
+    throw new Error(toMessage(error));
   }
-}
+};
 
-export const addToCartService = async(info: infoCart) => {
+export const addToCartService = async (info: infoCart) => {
   try {
     const response = await axios.post(`${BACKEND_URL}/addToCart`, info);
     return response.data;
-  } catch(error) {
-    throw new Error(`${error.message}`);
+  } catch (error) {
+    throw new Error(toMessage(error));
   }
-}
+};
 
-export const updateCartService = async(info: infoCart): Promise<Cart> => {
-  const {userId, ...body} = info;
+export const updateCartService = async (info: infoCart): Promise<Cart> => {
+  const { userId, ...body } = info;
   try {
-    const response = await axios.put(`${BACKEND_URL}/updateCart/${userId}`, body);
+    const response = await axios.patch(`${BACKEND_URL}/updateCart/${userId}`, body);
     return response.data;
-  } catch(error) {
-    throw new Error(`${error.message}`);
+  } catch (error) {
+    throw new Error(toMessage(error));
   }
-}
+};
 
-export const deleteProductService = async(info: userProduct) => {
-  const {userId, productId} = info;
+export const deleteProductService = async (info: userProduct) => {
+  const { userId, productId } = info;
   try {
     const response = await axios.delete(`${BACKEND_URL}/deleteProduct/${userId}/${productId}`);
-    return response.data; 
-  } catch(error) {
-    throw new Error(`${error.message}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(toMessage(error));
   }
-}
+};
 
-export const getCartTotalService = async(userId: string) => {
+export const getCartTotalService = async (userId: string): Promise<number> => {
   try {
     const response = await axios.get(`${BACKEND_URL}/total/${userId}`);
-    return response.data;
-  } catch(error) {
-    throw new Error(`${error.message}`);
+    return response.data.cartTotal;
+  } catch (error) {
+    throw new Error(toMessage(error));
   }
-}
+};
 
-export const clearCartService = async(userId: string) => {
+export const clearCartService = async (userId: string) => {
   try {
     const response = await axios.delete(`${BACKEND_URL}/clearCart/${userId}`);
     return response.data;
-  } catch(error){
-    throw new Error(`${error.message}`);
+  } catch (error) {
+    throw new Error(toMessage(error));
   }
-}
+};

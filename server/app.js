@@ -15,7 +15,7 @@ import { fileURLToPath } from "url";
 import { connectDB } from "./config/db.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.join(__dirname, "../.env") });
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 const PORT = process.env.PORT;
 const FRONT_URL = process.env.FRONT_URL;
@@ -23,8 +23,8 @@ const app = express();
 
 app.use(cors({
   origin: FRONT_URL,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  headers: [
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: [
     "Content-Type",
     "Authorization",
   ],

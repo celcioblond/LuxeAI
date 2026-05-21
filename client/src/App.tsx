@@ -14,23 +14,26 @@ import { ProductProvider } from './context/ProductContext';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminRoute from './components/AdminRoute';
 import {Toaster } from "react-hot-toast";
+import { CartProvider } from './context/CartContext';
 
 const App = () => {
   return (
     <Router>
       <AuthProvider>
         <ProductProvider>
-        <Routes>
-          <Route path="/register" element={<Register />} />
-          <Route path="/homepage" element={<Homepage />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route element={<AdminRoute />}>
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          </Route>
-          <Route path="/" element={<Navigate to="/homepage" />} />
-        </Routes>
+          <CartProvider>
+            <Routes>
+              <Route path="/register" element={<Register />} />
+              <Route path="/homepage" element={<Homepage />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route element={<AdminRoute />}>
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
+              </Route>
+              <Route path="/" element={<Navigate to="/homepage" />} />
+            </Routes>
+          </CartProvider>
         </ProductProvider>
       </AuthProvider>
       <Toaster /> 

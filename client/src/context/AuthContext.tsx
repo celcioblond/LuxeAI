@@ -83,10 +83,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const getUserId = (): string => {
-    return user?.id;
+    return user?.id ?? '';
   }
 
-  const isAuthenticated = (): bool => {
+  const isAuthenticated = (): boolean => {
     return token ? true : false;
   }
 
