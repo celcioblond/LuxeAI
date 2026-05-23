@@ -1,5 +1,8 @@
-import { useState, createContext, useCallback, useEffect } from "react";
-import { getProducts as fetchProducts, getProduct as fetchProduct } from "../services/productService";
+import { useState, createContext, useCallback, useEffect } from 'react';
+import {
+  getProducts as fetchProducts,
+  getProduct as fetchProduct,
+} from '../services/productService';
 
 type ProductContextType = {
   products: any[];
@@ -9,17 +12,20 @@ type ProductContextType = {
   loadingProducts: boolean;
   loadingProduct: boolean;
   error: string;
-}
+};
 
 export const ProductContext = createContext<ProductContextType | null>(null);
 
-export const ProductProvider = ({children}: { children: React.ReactNode }) => {
-
+export const ProductProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [products, setProducts] = useState<any[]>([]);
-  const [product, setProduct] = useState({});
+  const [product, setProduct] = useState<any>(null);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const getProducts = useCallback(async () => {
     try {
@@ -27,8 +33,8 @@ export const ProductProvider = ({children}: { children: React.ReactNode }) => {
       const data = await fetchProducts();
       setProducts(data.products);
       setLoadingProducts(false);
-    } catch(error) {
-      setError("Failed to fetch products");
+    } catch (error) {
+      setError('Failed to fetch products');
     }
   }, []);
 
@@ -37,9 +43,10 @@ export const ProductProvider = ({children}: { children: React.ReactNode }) => {
       setLoadingProduct(true);
       const fetchedProduct = await fetchProduct(id);
       setProduct(fetchedProduct.product);
-      setLoadingProduct(false);
-    } catch(error) {
-      setError("Failed to fetch product");
+    } catch (error) {
+      setError('Failed to fetch product');
+    } finally {
+      setLoadingProduct(false); // always runs
     }
   }, []);
 
@@ -54,10 +61,10 @@ export const ProductProvider = ({children}: { children: React.ReactNode }) => {
     getProduct,
     loadingProduct,
     loadingProducts,
-    error
-  }
+    error,
+  };
 
-  return <ProductContext.Provider value={value}>
-    {children}
-  </ProductContext.Provider>
-}
+  return (
+    <ProductContext.Provider value={value}>{children}</ProductContext.Provider>
+  );
+};

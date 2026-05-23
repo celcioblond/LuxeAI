@@ -11,7 +11,7 @@ const ProductDetails = () => {
   const {addToCart, quantity} = useCart();
 
   const handleAddToCart = async () => {
-    await addToCart(product, 1)
+    await addToCart(product._id, 1)
     toast.success(`${product.name} added successfully`)
   }
 
@@ -38,7 +38,15 @@ const ProductDetails = () => {
         </h1>
         <div className="rounded-full w-12 h-12 bg-white flex items-center justify-center shadow-md transition-transform duration-300 hover:scale-110 hover:shadow-lg">
           <Link to="/cart">
-            <FaShoppingCart size={22} />
+            <div className="relative">
+              <FaShoppingCart size={22} />
+              {quantity > 0 && (
+                <span className='absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold w-4 h-4 rounded-full
+                flex items-center justify-center'>
+                  {quantity > 9 ? '9+' : quantity}
+                </span>
+              )}
+            </div>
           </Link>
         </div>
       </header>
@@ -60,7 +68,10 @@ const ProductDetails = () => {
           {product.stock === 0 ? (
             <p className="text-red-600 font-semibold">Out of stock</p>
           ) : (
-            <button onClick={handleAddToCart} className="px-4 py-2 bg-blue-500 text-white font-bold hover:bg-blue-600 rounded">
+            <button
+              onClick={handleAddToCart}
+              className="px-4 py-2 bg-blue-500 text-white font-bold hover:bg-blue-600 rounded"
+            >
               Add to cart
             </button>
           )}
