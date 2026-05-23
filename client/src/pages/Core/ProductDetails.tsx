@@ -2,10 +2,18 @@ import useProducts from '../../hooks/useProducts';
 import { useParams, Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { FaShoppingCart } from 'react-icons/fa';
+import useCart from '../../hooks/useCart';
+import toast from "react-hot-toast"
 
 const ProductDetails = () => {
   const { getProduct, product, loadingProduct } = useProducts();
   const { id } = useParams();
+  const {addToCart, quantity} = useCart();
+
+  const handleAddToCart = async () => {
+    await addToCart(product, 1)
+    toast.success(`${product.name} added successfully`)
+  }
 
   useEffect(() => {
     getProduct(id);
@@ -30,7 +38,7 @@ const ProductDetails = () => {
         </h1>
         <div className="rounded-full w-12 h-12 bg-white flex items-center justify-center shadow-md transition-transform duration-300 hover:scale-110 hover:shadow-lg">
           <Link to="/cart">
-            <FaShoppingCart size={24} />
+            <FaShoppingCart size={22} />
           </Link>
         </div>
       </header>
@@ -52,7 +60,7 @@ const ProductDetails = () => {
           {product.stock === 0 ? (
             <p className="text-red-600 font-semibold">Out of stock</p>
           ) : (
-            <button className="px-4 py-2 bg-blue-500 text-white font-bold hover:bg-blue-600 rounded">
+            <button onClick={handleAddToCart} className="px-4 py-2 bg-blue-500 text-white font-bold hover:bg-blue-600 rounded">
               Add to cart
             </button>
           )}

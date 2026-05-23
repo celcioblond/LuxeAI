@@ -19,6 +19,7 @@ import { CartProvider } from './context/CartContext';
 const App = () => {
   return (
     <Router>
+      <Toaster position="top-right" />
       <AuthProvider>
         <ProductProvider>
           <CartProvider>
@@ -36,7 +37,6 @@ const App = () => {
           </CartProvider>
         </ProductProvider>
       </AuthProvider>
-      <Toaster /> 
     </Router>
   );
 };
