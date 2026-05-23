@@ -11,7 +11,7 @@ const Cart = () => {
     updateQuantity,
     clearCart,
   } = useCart();
-
+  
 
   return (
     <div className="flex mx-auto items-center justify-center min-h-screen bg-slate-100">
