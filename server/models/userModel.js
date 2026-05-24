@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
       minlength: [8, "Password must be at least 8 characters"],
-      select: false,  // never returned in queries by default
+      select: false,
     },
     role: {
       type: String,
@@ -36,21 +36,7 @@ const userSchema = new mongoose.Schema(
       city:    { type: String, trim: true },
       state:   { type: String, trim: true },
       zip:     { type: String, trim: true },
-      country: { type: String, trim: true, default: "US" },
-    },
-    wishlist: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-      },
-    ],
-    isActive: {
-      type: Boolean,
-      default: true,   // soft delete — deactivate instead of removing
-    },
-    orders: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Order",
+      country: { type: String, trim: true },
     },
     passwordChangedAt: Date,
     passwordResetToken: String,

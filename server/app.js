@@ -3,6 +3,7 @@ import morgan from "morgan";
 import auth from "./routes/auth.js";
 import products from "./routes/products.js";
 import cart from "./routes/cart.js";
+import admin from "./routes/admin.js";
 import cors from "cors";
 import bodyParser from "body-parser";
 import HttpError from "./models/http-error.js";
@@ -33,6 +34,7 @@ app.use(express.json());
 app.use("/api/auth",     auth);
 app.use("/api/products", products);
 app.use("/api/cart",     cart);
+app.use("/api/admin", admin);
 
 app.use((_req, _res, next) => {
   next(new HttpError("Could not find this route", 404));
