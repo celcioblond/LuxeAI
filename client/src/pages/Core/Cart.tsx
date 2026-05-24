@@ -101,7 +101,7 @@ const Cart = () => {
             {/* Card header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-bold text-gray-800">
-                Carrito de compras
+                Shopping Cart
               </h2>
               <button
                 onClick={() => navigate('/homepage')}
@@ -192,7 +192,7 @@ const Cart = () => {
             {/* Summary */}
             <div className="bg-gray-50 border-t border-gray-200 px-6 py-4 space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
-                <span>Total de artículos:</span>
+                <span>Total items:</span>
                 <span className="font-medium text-gray-800">{quantity}</span>
               </div>
               <div className="flex justify-between text-lg font-bold text-gray-900">
@@ -208,21 +208,21 @@ const Cart = () => {
                 disabled={updating}
                 className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Vaciar carrito
+                Clear cart
               </button>
               <button
                 onClick={() => navigate('/homepage')}
                 disabled={updating}
                 className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Seguir comprando
+                Continue shopping
               </button>
               <button
                 onClick={() => navigate('/checkout')}
                 disabled={updating}
                 className="ml-auto px-5 py-2 bg-black hover:bg-gray-800 text-white rounded-lg transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Proceder al pago
+                Proceed to checkout
               </button>
             </div>
           </div>
