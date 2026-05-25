@@ -1,6 +1,6 @@
-import User from '../models/userModel.js';
-import Product from '../models/productModel.js';
 import HttpError from '../models/http-error.js';
+import Product from '../models/productModel.js';
+import User from '../models/userModel.js';
 
 export const getDashboardStats = async (req, res, next) => {
   try {
@@ -28,7 +28,8 @@ export const updateUser = async (req, res, next) => {
     const { id } = req.params;
     const { name, email, role, address } = req.body;
 
-    const updatedData = {};
+    const updateData = {};
+
     if (name !== undefined) updateData.name = name;
     if (email !== undefined) updateData.email = email;
     if (role !== undefined) updateData.role = role;
@@ -53,27 +54,26 @@ export const updateUser = async (req, res, next) => {
       if (address.country !== undefined) {
         updateData['address.country'] = address.country;
       }
-
-      const user = await User.findByIdAndUpdate(
-        id,
-        {$set: updatedData},
-        {
-          new: true,
-          runValidators: true,
-        }
-      ).select("-password");
     }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).select('-password');
 
     if (!user) {
-      return next(new HttpError("User not foudn", 404));
+      return next(new HttpError('User not found', 404));
     }
 
-    res.status(200).json({user});
+    res.status(200).json({ user });
   } catch (error) {
     return next(new HttpError(`Failed to update user: ${error.message}`, 500));
   }
 };
-
 
 export const deleteUser = async (req, res, next) => {
   try {
