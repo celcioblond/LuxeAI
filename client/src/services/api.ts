@@ -4,8 +4,7 @@ const BACK_URL = import.meta.env.VITE_API_URL;
 //get token from localstorage
 
 export const getToken = (): string | null => {
-  const token = localStorage.getItem('token');
-  return token ? JSON.parse(token) : null;
+  return localStorage.getItem('token');
 };
 
 const api: AxiosInstance = axios.create({

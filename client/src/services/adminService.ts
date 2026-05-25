@@ -23,11 +23,36 @@ interface User {
   updatedAt: string;
 }
 
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  description: string;
+  stock: number;
+  imageUrl: string;
+}
+
 interface UpdateUserPayload {
   name?: string;
   email?: string;
   role?: string;
   address?: Address;
+}
+
+interface AddProductPayload {
+  name: string;
+  price: number;
+  description: string;
+  stock: number;
+  imageUrl: string;
+}
+
+interface UpdateProductPayload {
+  name?: string;
+  price?: number;
+  description?: string;
+  stock?: number;
+  imageUrl?: string;
 }
 
 interface UsersResponse {
@@ -37,12 +62,17 @@ interface UsersResponse {
 interface UpdateUserResponse {
   user: User;
 }
-interface UpdateUserResponse {
-  user: User;
-}
 
 interface DeleteResponse {
   message: string;
+}
+
+interface AddProductResponse {
+  product: Product;
+}
+
+interface UpdateProductResponse {
+  product: Product;
 }
 
 export const getDashboardStats = async (): Promise<DashboardStats> => {
@@ -83,7 +113,7 @@ export const updateUser = async (
 export const deleteUser = async (id: string): Promise<string> => {
   try {
     const response: AxiosResponse<DeleteResponse> = await api.delete(
-      `/api/admin/${id}`,
+      `/api/admin/users/${id}`,
     );
     return response.data.message;
   } catch (error: any) {
@@ -91,8 +121,42 @@ export const deleteUser = async (id: string): Promise<string> => {
   }
 };
 
-export const addProduct = () => {};
+export const addProduct = async (
+  productPayload: AddProductPayload,
+): Promise<Product> => {
+  try {
+    const response: AxiosResponse<AddProductResponse> = await api.post(
+      `/api/products`,
+      productPayload,
+    );
+    return response.data.product;
+  } catch (error: any) {
+    throw new Error(`Error: ${error.message}`);
+  }
+};
 
-export const updateProduct = () => {};
+export const updateProduct = async (
+  id: string,
+  productPayload: UpdateProductPayload,
+): Promise<Product> => {
+  try {
+    const response: AxiosResponse<UpdateProductResponse> = await api.patch(
+      `/api/products/${id}`,
+      productPayload,
+    );
+    return response.data.product;
+  } catch (error: any) {
+    throw new Error(`Error: ${error.message}`);
+  }
+};
 
-export const deleteProduct = () => {};
+export const deleteProduct = async (id: string): Promise<string> => {
+  try {
+    const response: AxiosResponse<DeleteResponse> = await api.delete(
+      `/api/products/${id}`,
+    );
+    return response.data.message;
+  } catch (error: any) {
+    throw new Error(`Error: ${error.message}`);
+  }
+};
