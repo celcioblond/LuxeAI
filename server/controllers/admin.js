@@ -26,44 +26,13 @@ export const getAllUsers = async (req, res, next) => {
 export const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, email, role, address } = req.body;
 
-    const updateData = {};
+    const updateUser = userSchema.parse(req.body);
 
-    if (name !== undefined) updateData.name = name;
-    if (email !== undefined) updateData.email = email;
-    if (role !== undefined) updateData.role = role;
-
-    if (address) {
-      if (address.street !== undefined) {
-        updateData['address.street'] = address.street;
-      }
-
-      if (address.city !== undefined) {
-        updateData['address.city'] = address.city;
-      }
-
-      if (address.state !== undefined) {
-        updateData['address.state'] = address.state;
-      }
-
-      if (address.zip !== undefined) {
-        updateData['address.zip'] = address.zip;
-      }
-
-      if (address.country !== undefined) {
-        updateData['address.country'] = address.country;
-      }
-    }
-
-    const user = await User.findByIdAndUpdate(
-      id,
-      { $set: updateData },
-      {
-        new: true,
-        runValidators: true,
-      },
-    ).select('-password');
+    const user = await User.findByIdAndUpdate(id, updateUser, {
+      new: true,
+      runValidators: true,
+    }).select('-password');
 
     if (!user) {
       return next(new HttpError('User not found', 404));

@@ -31,16 +31,8 @@ export const getProductById = async (req, res, next) => {
 
 export const addProduct = async (req, res, next) => {
   try {
-    const { name, price, description, stock, imageUrl } = productSchema.parse(
-      req.body,
-    );
-    const product = await Product.create({
-      name,
-      price,
-      description,
-      stock,
-      imageUrl,
-    });
+    const newProduct = productSchema.parse(req.body);
+    const product = await Product.create(newProduct);
     res.status(201).json({
       product,
     });
@@ -56,7 +48,7 @@ export const addProduct = async (req, res, next) => {
 
 export const updateProduct = async (req, res, next) => {
   try {
-    const productId = req.params.id;
+    const { productId } = req.params;
 
     const updatedProduct = productSchema.partial().parse(req.body);
 
