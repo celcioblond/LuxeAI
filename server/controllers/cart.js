@@ -5,6 +5,9 @@ import Product from "../models/productModel.js";
 export const getCart = async(req, res, next) => {
   try {
     const { userId } = req.params;
+    if (req.user.userId !== userId) {
+      return next(new HttpError('Unauthorized', 403));
+    }
     const cart = await Cart.findOne({ userId }).populate('products.productId');
 
     if (!cart) {
@@ -18,6 +21,10 @@ export const getCart = async(req, res, next) => {
 export const addToCart = async (req, res, next) => {
   try {
     const { userId, productId, quantity } = req.body;
+
+    if (req.user.userId !== userId) {
+      return next(new HttpError('Unauthorized', 403));
+    }
 
     if (!userId || quantity <= 0) {
       return next(new HttpError(`UserId is required or quantity is invalid`, 400));
@@ -60,6 +67,9 @@ export const addToCart = async (req, res, next) => {
 export const updateCart = async(req, res, next) => {
   try {
     const {userId} = req.params;
+    if (req.user.userId !== userId) {
+      return next(new HttpError('Unauthorized', 403));
+    }
     const {productId, quantity} = req.body;
     if(!userId || !productId){
       return next(new HttpError("No user or product found", 400));
@@ -99,6 +109,9 @@ export const updateCart = async(req, res, next) => {
 export const deleteProduct = async(req, res, next) => {
   try {
     const {userId, productId} = req.params;
+    if (req.user.userId !== userId) {
+      return next(new HttpError('Unauthorized', 403));
+    }
     if(!userId || !productId) {
       return next(new HttpError("User and product are required", 400));
     }
@@ -127,6 +140,9 @@ export const deleteProduct = async(req, res, next) => {
 export const getCartTotal = async(req, res, next) => {
   try {
     const {userId} = req.params;
+    if (req.user.userId !== userId) {
+      return next(new HttpError('Unauthorized', 403));
+    }
     const cart = await Cart.findOne({userId}).populate("products.productId");
     if(!cart) {
       return next(new HttpError("Cart was not found", 404));
@@ -145,6 +161,9 @@ export const getCartTotal = async(req, res, next) => {
 export const clearCart = async(req, res, next) => {
   try {
     const {userId} = req.params;
+    if (req.user.userId !== userId) {
+      return next(new HttpError('Unauthorized', 403));
+    }
     if(!userId) {
       return next(new HttpError("UserId is required", 400));
     }
