@@ -1,6 +1,7 @@
 import HttpError from '../models/http-error.js';
 import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
+import { updateUserSchema } from '../schemas/userSchema.js';
 
 export const getDashboardStats = async (req, res, next) => {
   try {
@@ -27,7 +28,7 @@ export const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const updateUser = userSchema.parse(req.body);
+    const updateUser = updateUserSchema.parse(req.body);
 
     const user = await User.findByIdAndUpdate(id, updateUser, {
       new: true,
