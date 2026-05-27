@@ -13,17 +13,19 @@ export const register = async (req, res, next) => {
     }
 
     const existingUser = await User.findOne({email});
-    
+
     if (existingUser) {
       return next(new HttpError("Email is already in use", 400));
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
+    const userCount = await User.countDocuments();
 
-    const user = new User({ 
+    const user = new User({
       name,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      role: userCount === 0 ? 'admin' : 'user',
     });
 
     const result = await user.save();
