@@ -1,12 +1,12 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import useAuth from '../hooks/useAuth';
 import {
   addToCartService,
+  clearCartService,
   deleteProductService,
   getCartService,
-  updateCartService,
-  clearCartService,
   getCartTotalService,
+  updateCartService,
 } from '../services/cartService';
 
 interface CartProduct {
@@ -54,7 +54,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [updating, setUpdating] = useState<boolean>(false); // mutations only
   const [total, setTotal] = useState<number>(0);
 
-  const { user, getUserId, isAuthenticated } = useAuth()!;
+  const { user, getUserId, loading: authLoading, isAdmin } = useAuth()!;
 
   const fetchCart = async () => {
     try {
@@ -70,13 +70,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    if (isAuthenticated()) {
+    if (authLoading) return;
+
+    if (user && !isAdmin()) {
       fetchCart();
     } else {
       setCart(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, authLoading]);
 
   useEffect(() => {
     const newTotal = cart?.products.reduce(
