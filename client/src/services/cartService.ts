@@ -1,5 +1,4 @@
-import axios from "axios";
-const BACKEND_URL = import.meta.env.VITE_API_URL;
+import api from "./api";
 
 interface infoCart {
   userId: string;
@@ -38,7 +37,7 @@ const toMessage = (error: unknown) =>
 
 export const getCartService = async (userId: string): Promise<Cart> => {
   try {
-    const response = await axios.get(`${BACKEND_URL}/api/cart/getCart/${userId}`);
+    const response = await api.get(`/api/cart/getCart/${userId}`);
     return response.data.cart;
   } catch (error) {
     throw new Error(toMessage(error));
@@ -47,7 +46,7 @@ export const getCartService = async (userId: string): Promise<Cart> => {
 
 export const addToCartService = async (info: infoCart) => {
   try {
-    const response = await axios.post(`${BACKEND_URL}/api/cart/addToCart`, info);
+    const response = await api.post(`/api/cart/addToCart`, info);
     return response.data;
   } catch (error) {
     throw new Error(toMessage(error));
@@ -57,7 +56,7 @@ export const addToCartService = async (info: infoCart) => {
 export const updateCartService = async (info: infoCart): Promise<Cart> => {
   const { userId, ...body } = info;
   try {
-    const response = await axios.patch(`${BACKEND_URL}/api/cart/updateCart/${userId}`, body);
+    const response = await api.patch(`/api/cart/updateCart/${userId}`, body);
     return response.data;
   } catch (error) {
     throw new Error(toMessage(error));
@@ -67,7 +66,7 @@ export const updateCartService = async (info: infoCart): Promise<Cart> => {
 export const deleteProductService = async (info: userProduct) => {
   const { userId, productId } = info;
   try {
-    const response = await axios.delete(`${BACKEND_URL}/api/cart/deleteProduct/${userId}/${productId}`);
+    const response = await api.delete(`/api/cart/deleteProduct/${userId}/${productId}`);
     return response.data;
   } catch (error) {
     throw new Error(toMessage(error));
@@ -76,7 +75,7 @@ export const deleteProductService = async (info: userProduct) => {
 
 export const getCartTotalService = async (userId: string): Promise<number> => {
   try {
-    const response = await axios.get(`${BACKEND_URL}/api/cart/total/${userId}`);
+    const response = await api.get(`/api/cart/total/${userId}`);
     return response.data.cartTotal;
   } catch (error) {
     throw new Error(toMessage(error));
@@ -85,7 +84,7 @@ export const getCartTotalService = async (userId: string): Promise<number> => {
 
 export const clearCartService = async (userId: string) => {
   try {
-    const response = await axios.delete(`${BACKEND_URL}/api/cart/clearCart/${userId}`);
+    const response = await api.delete(`/api/cart/clearCart/${userId}`);
     return response.data;
   } catch (error) {
     throw new Error(toMessage(error));
