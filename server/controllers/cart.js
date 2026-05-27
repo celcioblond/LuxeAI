@@ -10,10 +10,7 @@ export const getCart = async(req, res, next) => {
     }
     const cart = await Cart.findOne({ userId }).populate('products.productId');
 
-    if (!cart) {
-      return next(new HttpError(`Cart not found for user: ${userId}`, 404));
-    }
-    res.status(200).json({cart});
+    res.status(200).json({ cart: cart ?? { userId, products: [] } });
   } catch(error) {
     return next(new HttpError(`Failed to fetch cart: ${error.message}`, 500));
   }
