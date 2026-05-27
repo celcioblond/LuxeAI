@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { validateEmail, validatePassword } from '../../utils/formValidations';
 import { useAuth } from '../../hooks/useAuth';
 import toast from 'react-hot-toast';
@@ -6,6 +7,7 @@ import toast from 'react-hot-toast';
 
 const Register = () => {
   const authContext = useAuth();
+  const navigate = useNavigate();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -13,7 +15,6 @@ const Register = () => {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const isValidEmail = validateEmail(email);
   const isValidPassword = validatePassword(password);
@@ -36,44 +37,27 @@ const Register = () => {
       toast.loading('Registering...', { duration: 4000, position: 'top-right' });
       setLoading(true);
 
-      await authContext?.register({ name, email, password });
+      const user = await authContext?.register({ name, email, password });
       setName('');
       setEmail('');
       setPassword('');
       setLoading(false);
-      setSuccess(true);
       toast.success('Registered successfully!', { duration: 3000, position: 'top-right' });
+      if (user?.role === 'admin') {
+        navigate('/admin-dashboard');
+      } else {
+        navigate('/homepage');
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Registration failed');
       setLoading(false);
-      setSuccess(false);
       toast.error(err instanceof Error ? err.message : 'Registration failed', { duration: 4000, position: 'top-right' });
     }
   };
 
   return (
     <>
-      {success ? (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
-          <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md flex flex-col items-center gap-4">
-            <h1 className="text-2xl font-bold text-cyan-500 tracking-wide">
-              Registration Successful!
-            </h1>
-            <a
-              href="/login"
-              className="text-cyan-500 font-medium hover:underline"
-            >
-              Log in
-            </a>
-            <a
-              href="/homepage"
-              className="text-cyan-500 font-medium hover:underline"
-            >
-              Home Page
-            </a>
-          </div>
-        </div>
-      ) : loading ? (
+      {loading ? (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
           <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md flex flex-col items-center gap-6">
             <div className="w-14 h-14 rounded-full border-4 border-teal-200 border-t-cyan-500 animate-spin" />
