@@ -18,7 +18,7 @@ export const protect = async (req, res, next) => {
     req.user = decoded;
     next();
   } catch(error) {
-    return next(new HttpError("Failure"), 401);
+    return next(new HttpError("Failure", 401));
   }
 }
 

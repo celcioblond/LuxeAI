@@ -10,7 +10,7 @@ export const getAllProducts = async (req, res, next) => {
       products,
     });
   } catch (error) {
-    return next(new HttpError('Error getting all products'), 500);
+    return next(new HttpError('Error getting all products', 500));
   }
 };
 
@@ -42,13 +42,13 @@ export const addProduct = async (req, res, next) => {
         .status(400)
         .json(error.issues.map((issue) => ({ message: issue.message })));
     }
-    return next(new HttpError(`Error message:  ${error.message}`), 500);
+    return next(new HttpError(`Error message: ${error.message}`, 500));
   }
 };
 
 export const updateProduct = async (req, res, next) => {
   try {
-    const { productId } = req.params;
+    const { id: productId } = req.params;
 
     const updatedProduct = productSchema.partial().parse(req.body);
 
