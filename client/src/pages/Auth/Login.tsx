@@ -1,17 +1,18 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import toast from "react-hot-toast";
 
 const Login = () => {
 
   const authContext = useAuth();
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -27,43 +28,26 @@ const Login = () => {
       toast.loading("Signing in...", { duration: 4000, position: "top-right" });
       setLoading(true);
 
-      await authContext?.login({ email, password });
+      const user = await authContext?.login({ email, password });
       setEmail('');
       setPassword('');
       setLoading(false);
-      setSuccess(true);
       toast.success("Login successful!", { duration: 3000, position: "top-right" });
+      if (user?.role === 'admin') {
+        navigate('/admin-dashboard');
+      } else {
+        navigate('/homepage');
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed');
       setLoading(false);
-      setSuccess(false);
       toast.error(err instanceof Error ? err.message : 'Login failed', { duration: 4000, position: "top-right" });
     }
   };
 
   return (
     <>
-      {success ? (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
-          <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md flex flex-col items-center gap-4">
-            <h1 className="text-2xl font-bold text-cyan-500 tracking-wide">
-              Login Successful!
-            </h1>
-            <a
-              href="/admin-dashboard"
-              className="text-cyan-500 font-medium hover:underline"
-            >
-              Admin Dashboard
-            </a>
-            <a
-              href="/homepage"
-              className="text-cyan-500 font-medium hover:underline"
-            >
-              Home Page
-            </a>
-          </div>
-        </div>
-      ) : loading ? (
+      {loading ? (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
           <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md flex flex-col items-center gap-6">
             <div className="w-14 h-14 rounded-full border-4 border-teal-200 border-t-cyan-500 animate-spin" />
