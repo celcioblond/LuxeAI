@@ -14,7 +14,7 @@ const Navlinks = () => {
     <ul className="flex items-center gap-6 list-none">
       <li>
         <NavLink
-          to="/users"
+          to="/login"
           className={({ isActive }) =>
             isActive
               ? 'font-semibold underline'
@@ -36,22 +36,10 @@ const Navlinks = () => {
           Cart
         </NavLink>
       </li>
-      <li>
-        <NavLink
-          to="/checkout"
-          className={({ isActive }) =>
-            isActive
-              ? 'font-semibold underline'
-              : 'text-gray-600 hover:text-black transition-colors'
-          }
-        >
-          Checkout
-        </NavLink>
-      </li>
 
       {isAuthenticated() && (
         <li>
-          <button className="text-gray-600 hover:text-black transition-colors"onClick={handleLogout}>
+          <button className="text-gray-600 hover:text-black transition-colors" onClick={handleLogout}>
             Logout
           </button>
         </li>
