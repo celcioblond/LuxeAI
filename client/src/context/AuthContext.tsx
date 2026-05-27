@@ -23,8 +23,8 @@ type AuthContextRes = {
   user: User | null;
   token: string | null;
   loading: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
-  register: (credentials: RegisterCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<User>;
+  register: (credentials: RegisterCredentials) => Promise<User>;
   logout: () => void;
   isAdmin: () => boolean;
   getUserId: () => string;
@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(response.token);
     localStorage.setItem('user', JSON.stringify(response.user));
     localStorage.setItem('token', response.token);
+    return response.user;
   };
 
   const register = async (credentials: RegisterCredentials) => {
@@ -65,6 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(response.token);
     localStorage.setItem('user', JSON.stringify(response.user));
     localStorage.setItem('token', response.token);
+    return response.user;
   };
 
   const logout = (): void => {
