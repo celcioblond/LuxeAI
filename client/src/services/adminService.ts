@@ -131,7 +131,11 @@ export const addProduct = async (
     );
     return response.data.product;
   } catch (error: any) {
-    throw new Error(`Error: ${error.message}`);
+    const zodErrors = error.response?.data;
+    if (Array.isArray(zodErrors)) {
+      throw new Error(zodErrors.map((e: { message: string }) => e.message).join(', '));
+    }
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
@@ -146,7 +150,11 @@ export const updateProduct = async (
     );
     return response.data.product;
   } catch (error: any) {
-    throw new Error(`Error: ${error.message}`);
+    const zodErrors = error.response?.data;
+    if (Array.isArray(zodErrors)) {
+      throw new Error(zodErrors.map((e: { message: string }) => e.message).join(', '));
+    }
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
