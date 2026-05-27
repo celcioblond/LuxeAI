@@ -1,11 +1,11 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       trim: true,
-      required: true
+      required: true,
     },
     price: {
       type: Number,
@@ -15,20 +15,20 @@ const productSchema = new mongoose.Schema(
     description: {
       type: String,
       trim: true,
-      required: true
+      required: true,
     },
     stock: {
       type: Number,
       min: 0,
-      required: true
+      required: true,
     },
     imageUrl: {
       type: String,
-      required: true
+      required: true,
     },
   },
-  {timestamps: true}
-)
+  { timestamps: true },
+);
 
-const Product = new mongoose.model("Product", productSchema);
+const Product = mongoose.model('Product', productSchema);
 export default Product;
