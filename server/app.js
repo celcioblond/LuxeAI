@@ -9,7 +9,8 @@ import HttpError from './models/http-error.js';
 import admin from './routes/admin.js';
 import auth from './routes/auth.js';
 import cart from './routes/cart.js';
-import orders from './routes/orders.js;';
+import orders from './routes/orders.js';
+import { handleStripeWebhook } from './controllers/order.js';
 import products from './routes/products.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -30,6 +31,7 @@ app.use(
 app.use(morgan('dev'));
 
 app.use('/api/webhooks/stripe', express.raw({ type: 'application/json' }));
+app.post('/api/webhooks/stripe', handleStripeWebhook);
 app.use(express.json());
 
 app.use('/api/auth', auth);
