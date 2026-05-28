@@ -1,15 +1,17 @@
 import HttpError from '../models/http-error.js';
+import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
 import { updateUserSchema } from '../schemas/userSchema.js';
 
 export const getDashboardStats = async (req, res, next) => {
   try {
-    const [userCount, productCount] = await Promise.all([
+    const [userCount, productCount, orderCount] = await Promise.all([
       User.countDocuments(),
       Product.countDocuments(),
+      Order.countDocuments(),
     ]);
-    res.status(200).json({ userCount, productCount });
+    res.status(200).json({ userCount, productCount, orderCount });
   } catch (error) {
     return next(new HttpError(`Failed to get stats: ${error.message}`, 500));
   }
