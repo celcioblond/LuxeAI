@@ -5,6 +5,7 @@ import { getDashboardStats } from '../../services/adminService';
 interface Stats {
   userCount: number;
   productCount: number;
+  orderCount: number;
 }
 
 const AdminOverview = () => {
@@ -50,6 +51,21 @@ const AdminOverview = () => {
           )}
           <span className="inline-block px-3 py-1 bg-amber-300 rounded-2xl text-sm font-semibold w-fit">
             Manage products →
+          </span>
+        </div>
+
+        <div
+          onClick={() => navigate('/admin-dashboard/orders')}
+          className="flex flex-col p-6 space-y-4 shadow-2xl bg-white rounded-2xl hover:scale-105 duration-200 cursor-pointer min-w-52"
+        >
+          <p className="text-gray-500 text-sm uppercase tracking-widest">Total Orders</p>
+          {loading ? (
+            <div className="h-10 w-16 bg-slate-100 rounded animate-pulse" />
+          ) : (
+            <p className="text-4xl font-bold">{stats?.orderCount ?? 0}</p>
+          )}
+          <span className="inline-block px-3 py-1 bg-amber-300 rounded-2xl text-sm font-semibold w-fit">
+            Manage orders →
           </span>
         </div>
       </div>

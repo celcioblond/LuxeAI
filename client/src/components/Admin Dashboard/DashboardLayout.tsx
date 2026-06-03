@@ -38,6 +38,11 @@ const DashboardLayout = () => {
                 Products
               </NavLink>
             </li>
+            <li>
+              <NavLink to="/admin-dashboard/orders" className={linkClass}>
+                Orders
+              </NavLink>
+            </li>
             <li><span className="text-gray-300">|</span></li>
             <li className="text-sm text-gray-500">{auth?.user?.name}</li>
             <li>
