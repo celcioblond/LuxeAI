@@ -14,14 +14,14 @@ const Navlinks = () => {
     <ul className="flex items-center gap-6 list-none">
       <li>
         <NavLink
-          to="/login"
+          to="/orders"
           className={({ isActive }) =>
             isActive
               ? 'font-semibold underline'
               : 'text-gray-600 hover:text-black transition-colors'
           }
         >
-          Account
+          My Orders
         </NavLink>
       </li>
       <li>
