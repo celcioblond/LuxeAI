@@ -162,8 +162,7 @@ const CheckoutForm = () => {
                     required
                     value={form.firstName}
                     onChange={(e) => setField('firstName', e.target.value)}
-                    placeholder="John"
-                    className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 placeholder-gray-400 focus:border-black transition-colors bg-transparent"
+                    className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 focus:border-black transition-colors bg-transparent"
                   />
                 </div>
                 <div>
@@ -173,8 +172,7 @@ const CheckoutForm = () => {
                     required
                     value={form.lastName}
                     onChange={(e) => setField('lastName', e.target.value)}
-                    placeholder="Doe"
-                    className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 placeholder-gray-400 focus:border-black transition-colors bg-transparent"
+                    className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 focus:border-black transition-colors bg-transparent"
                   />
                 </div>
               </div>
@@ -186,8 +184,8 @@ const CheckoutForm = () => {
                   required
                   value={form.street}
                   onChange={(e) => setField('street', e.target.value)}
-                  placeholder="123 Main St"
-                  className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 placeholder-gray-400 focus:border-black transition-colors bg-transparent"
+
+                  className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 focus:border-black transition-colors bg-transparent"
                 />
               </div>
 
@@ -199,8 +197,8 @@ const CheckoutForm = () => {
                     required
                     value={form.city}
                     onChange={(e) => setField('city', e.target.value)}
-                    placeholder="New York"
-                    className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 placeholder-gray-400 focus:border-black transition-colors bg-transparent"
+
+                    className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 focus:border-black transition-colors bg-transparent"
                   />
                 </div>
                 <div>
@@ -210,8 +208,8 @@ const CheckoutForm = () => {
                     required
                     value={form.state}
                     onChange={(e) => setField('state', e.target.value)}
-                    placeholder="NY"
-                    className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 placeholder-gray-400 focus:border-black transition-colors bg-transparent"
+
+                    className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 focus:border-black transition-colors bg-transparent"
                   />
                 </div>
               </div>
@@ -224,8 +222,8 @@ const CheckoutForm = () => {
                     required
                     value={form.zip}
                     onChange={(e) => setField('zip', e.target.value)}
-                    placeholder="10001"
-                    className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 placeholder-gray-400 focus:border-black transition-colors bg-transparent"
+
+                    className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 focus:border-black transition-colors bg-transparent"
                   />
                 </div>
                 <div>
@@ -235,8 +233,8 @@ const CheckoutForm = () => {
                     required
                     value={form.country}
                     onChange={(e) => setField('country', e.target.value)}
-                    placeholder="United States"
-                    className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 placeholder-gray-400 focus:border-black transition-colors bg-transparent"
+
+                    className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 focus:border-black transition-colors bg-transparent"
                   />
                 </div>
               </div>

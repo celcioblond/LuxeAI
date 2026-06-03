@@ -218,9 +218,9 @@ const Cart = () => {
                 Continue shopping
               </button>
               <button
-                disabled
-                className="ml-auto px-5 py-2 bg-black text-white rounded-lg font-medium text-sm opacity-40 cursor-not-allowed"
-                title="Checkout coming soon"
+                onClick={() => navigate('/checkout')}
+                disabled={updating}
+                className="ml-auto px-5 py-2 bg-black text-white rounded-lg font-medium text-sm hover:bg-amber-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Proceed to checkout
               </button>
