@@ -4,7 +4,6 @@ import express from 'express';
 import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { connectDB } from './config/db.js';
 import HttpError from './models/http-error.js';
 import admin from './routes/admin.js';
 import auth from './routes/auth.js';
@@ -16,7 +15,6 @@ import products from './routes/products.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-const PORT = process.env.PORT;
 const FRONT_URL = process.env.FRONT_URL;
 const app = express();
 
@@ -51,7 +49,4 @@ app.use((error, _req, res, next) => {
   res.status(status).json({ message, data });
 });
 
-await connectDB();
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+export default app;
