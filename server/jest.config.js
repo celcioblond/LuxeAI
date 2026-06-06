@@ -1,7 +1,6 @@
 const config = {
   testEnvironment: 'node',
   verbose: true,
-  extensionsToTreatAsEsm: ['.js'],
   transform: {},
   coverageDirectory: 'coverage',
   testMatch: ['**/__tests__/**/*.test.js', '**/*.test.js'],
