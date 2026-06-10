@@ -3,6 +3,7 @@ import request from 'supertest';
 import app from '../app.js';
 import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
+import cache from '../utils/cache.js';
 
 let adminToken;
 
@@ -18,6 +19,7 @@ afterAll(async () => {
 afterEach(async () => {
   await Product.deleteMany({});
   await User.deleteMany({});
+  cache.flushAll();
 });
 
 describe('GET /api/products', () => {
