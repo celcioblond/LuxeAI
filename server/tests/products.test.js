@@ -237,3 +237,112 @@ describe('DELETE /api/products/:id', () => {
     expect(response.statusCode).toBe(401);
   });
 });
+
+describe('Cache behavior', () => {
+  beforeEach(async () => {
+    const registerResponse = await request(app).post('/api/auth/register').send({
+      name: 'Admin User',
+      email: 'admin@example.com',
+      password: 'Password1!',
+    });
+    adminToken = registerResponse.body.token;
+  });
+
+  test('should return same products on consecutive GET /api/products requests', async () => {
+    await Product.create({
+      name: 'Luxury Watch',
+      price: 299.99,
+      description: 'A premium timepiece for the discerning buyer',
+      stock: 10,
+      imageUrl: 'https://example.com/watch.jpg',
+    });
+
+    const first = await request(app).get('/api/products');
+    const second = await request(app).get('/api/products');
+
+    expect(first.statusCode).toBe(200);
+    expect(second.statusCode).toBe(200);
+    expect(second.body.products).toEqual(first.body.products);
+  });
+
+  test('should return same product on consecutive GET /api/products/:id requests', async () => {
+    const product = await Product.create({
+      name: 'Luxury Watch',
+      price: 299.99,
+      description: 'A premium timepiece for the discerning buyer',
+      stock: 10,
+      imageUrl: 'https://example.com/watch.jpg',
+    });
+
+    const first = await request(app).get(`/api/products/${product._id}`);
+    const second = await request(app).get(`/api/products/${product._id}`);
+
+    expect(first.statusCode).toBe(200);
+    expect(second.statusCode).toBe(200);
+    expect(second.body.product).toEqual(first.body.product);
+  });
+
+  test('should return updated data after PATCH invalidates cache', async () => {
+    const product = await Product.create({
+      name: 'Luxury Watch',
+      price: 299.99,
+      description: 'A premium timepiece for the discerning buyer',
+      stock: 10,
+      imageUrl: 'https://example.com/watch.jpg',
+    });
+
+    await request(app).get(`/api/products/${product._id}`);
+
+    await request(app)
+      .patch(`/api/products/${product._id}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ price: 499.99 });
+
+    const response = await request(app).get(`/api/products/${product._id}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.product.price).toBe(499.99);
+  });
+
+  test('should not include deleted product after DELETE invalidates cache', async () => {
+    const product = await Product.create({
+      name: 'Luxury Watch',
+      price: 299.99,
+      description: 'A premium timepiece for the discerning buyer',
+      stock: 10,
+      imageUrl: 'https://example.com/watch.jpg',
+    });
+
+    await request(app).get('/api/products');
+
+    await request(app)
+      .delete(`/api/products/${product._id}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    const response = await request(app).get('/api/products');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.products).toHaveLength(0);
+  });
+
+  test('should include new product after POST invalidates cache', async () => {
+    await request(app).get('/api/products');
+
+    await request(app)
+      .post('/api/products')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        name: 'Diamond Ring',
+        price: 1999.99,
+        description: 'A stunning diamond ring for special occasions',
+        stock: 5,
+        imageUrl: 'https://example.com/ring.jpg',
+      });
+
+    const response = await request(app).get('/api/products');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.products).toHaveLength(1);
+    expect(response.body.products[0].name).toBe('Diamond Ring');
+  });
+});
