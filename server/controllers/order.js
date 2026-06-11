@@ -92,7 +92,7 @@ export const handleStripeWebhook = async (req, res, next) => {
 
     if (event.type === 'payment_intent.succeeded') {
       const order = await Order.findOneAndUpdate(
-        { 'stripeInfo.paymentIntentId': paymentIntent.id },
+        { 'stripeInfo.paymentIntentId': paymentIntent.id, status: { $ne: 'paid' } },
         {
           status: 'paid',
           'stripeInfo.paymentStatus': paymentIntent.status,
