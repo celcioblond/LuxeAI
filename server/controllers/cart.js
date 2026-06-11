@@ -91,13 +91,13 @@ export const updateCart = async(req, res, next) => {
     if(!productInside){
       return next(new HttpError("Product not in cart", 404));
     }
-    if(product.stock === 0 || quantity > product.stock) {
-      return next(new HttpError(`Only ${product.stock} is available`, 400));
-    }
     if(quantity === 0){
       const productIndex = cart.products.findIndex(p => p.productId.toString() === productId.toString());
       cart.products.splice(productIndex, 1);
     } else {
+      if(product.stock === 0 || quantity > product.stock) {
+        return next(new HttpError(`Only ${product.stock} is available`, 400));
+      }
       productInside.quantity = quantity;
     };
     await cart.save();
