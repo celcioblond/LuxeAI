@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { ZodError } from 'zod';
 import User from '../models/userModel.js';
 import HttpError from '../models/http-error.js';
 import bcrypt from "bcrypt";
@@ -7,10 +8,6 @@ import { loginSchema, registerSchema } from '../schemas/userSchema.js';
 export const register = async (req, res, next) => {
   try {
     const {name, email, password} = registerSchema.parse(req.body);
-
-    if (!name || !email || !password) {
-      return next(new HttpError("Name, email and password required", 400));
-    }
 
     const existingUser = await User.findOne({email});
 
@@ -44,6 +41,9 @@ export const register = async (req, res, next) => {
       }
     });
   } catch(error) {
+    if(error instanceof ZodError) {
+      return next(new HttpError(error.issues[0].message, 400));
+    }
     return next(new HttpError("Registration failed", 500));
   }
 }
@@ -51,9 +51,6 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
   try {
     const {email, password} = loginSchema.parse(req.body);
-    if (!email || !password) {
-      return next(new HttpError("Email and password required", 400));
-    }
 
     const user = await User.findOne({email}).select('+password');
     if(!user) {
@@ -83,6 +80,9 @@ export const login = async (req, res, next) => {
       }
     });
   } catch (error) {
+    if(error instanceof ZodError) {
+      return next(new HttpError(error.issues[0].message, 400));
+    }
     return next(new HttpError("Login failed", 500));
   }
 }

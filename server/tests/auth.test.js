@@ -80,31 +80,31 @@ describe('POST /api/auth/register', () => {
     expect(response.body.message).toBe('Email is already in use');
   });
 
-  test('invalid password returns status 500', async () => {
+  test('invalid password returns status 400', async () => {
     const response = await request(app).post('/api/auth/register').send({
       name: 'Ryan Ray',
       email: 'ryanray@outlook.com',
       password: 'weak',
     });
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
   });
 
-  test('missing name should return status 500', async () => {
+  test('missing name should return status 400', async () => {
     const response = await request(app).post('/api/auth/register').send({
       name: '',
       email: 'ryanray@outlook.com',
       password: 'Password1!',
     });
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
   });
 
-  test('invalid email format should return status 500', async () => {
+  test('invalid email format should return status 400', async () => {
     const response = await request(app).post('/api/auth/register').send({
       name: 'Ryan Ray',
       email: 'ryanray',
       password: 'Password1!',
     });
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
   });
 });
 
@@ -152,11 +152,11 @@ describe('POST /api/auth/login', () => {
     expect(response.body.message).toBe('Password is invalid');
   });
 
-  test('invalid email format should return status 500', async () => {
+  test('invalid email format should return status 400', async () => {
     const response = await request(app).post('/api/auth/login').send({
       email: 'ryanraw',
       password: 'Password1!',
     });
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(400);
   });
 });
