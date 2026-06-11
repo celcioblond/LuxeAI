@@ -12,9 +12,6 @@ export const protect = async (req, res, next) => {
       return next(new HttpError("Token is missing", 401));
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if(!decoded){
-      return next(new HttpError("Failed to authenticate", 401));
-    }
     req.user = decoded;
     next();
   } catch(error) {
