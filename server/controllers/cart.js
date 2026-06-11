@@ -44,7 +44,11 @@ export const addToCart = async (req, res, next) => {
       );
 
       if (existingProduct) {
-        existingProduct.quantity += quantity;
+        const newQty = existingProduct.quantity + quantity;
+        if (newQty > product.stock) {
+          return next(new HttpError(`Only ${product.stock} available`, 400));
+        }
+        existingProduct.quantity = newQty;
       } else {
         cart.products.push({ productId, quantity });
       }
