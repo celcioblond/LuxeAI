@@ -30,7 +30,7 @@ app.use(morgan('dev'));
 
 app.use('/api/webhooks/stripe', express.raw({ type: 'application/json' }));
 app.post('/api/webhooks/stripe', handleStripeWebhook);
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
 
 app.use('/api/auth', auth);
 app.use('/api/products', products);
