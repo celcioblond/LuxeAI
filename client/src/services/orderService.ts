@@ -87,10 +87,17 @@ export const getOrderByIdService = async (id: string): Promise<Order> => {
   }
 };
 
-export const getAllOrdersService = async (): Promise<Order[]> => {
+interface AdminOrdersResponse {
+  orders: Order[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export const getAllOrdersService = async (page = 1): Promise<AdminOrdersResponse> => {
   try {
-    const response = await api.get('/api/admin/orders');
-    return response.data.orders;
+    const response = await api.get('/api/admin/orders', { params: { page } });
+    return response.data;
   } catch (error) {
     throw new Error(toMessage(error));
   }
