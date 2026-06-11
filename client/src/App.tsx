@@ -12,6 +12,7 @@ import Cart from './pages/Core/Cart';
 import { AuthProvider } from './context/AuthContext';
 import { ProductProvider } from './context/ProductContext';
 import AdminRoute from './components/AdminRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './components/Admin Dashboard/DashboardLayout';
 import AdminOverview from './pages/Admin/AdminOverview';
 import AdminUsers from './pages/Admin/AdminUsers';
@@ -36,9 +37,11 @@ const App = () => {
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/login" element={<Login />} />
               <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
-              <Route path="/orders" element={<MyOrders />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
+                <Route path="/orders" element={<MyOrders />} />
+              </Route>
               <Route element={<AdminRoute />}>
                 <Route path="/admin-dashboard" element={<DashboardLayout />}>
                   <Route index element={<AdminOverview />} />
