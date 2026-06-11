@@ -4,6 +4,7 @@ import api from './api';
 interface DashboardStats {
   userCount: number;
   productCount: number;
+  orderCount: number;
 }
 
 interface Address {
