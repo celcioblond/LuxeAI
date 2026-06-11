@@ -8,7 +8,7 @@ export const getCart = async(req, res, next) => {
     if (req.user.userId !== userId) {
       return next(new HttpError('Unauthorized', 403));
     }
-    const cart = await Cart.findOne({ userId }).populate('products.productId');
+    const cart = await Cart.findOne({ userId }).populate('products.productId', 'name price imageUrl stock');
 
     res.status(200).json({ cart: cart ?? { userId, products: [] } });
   } catch(error) {
@@ -36,7 +36,7 @@ export const addToCart = async (req, res, next) => {
       return next(new HttpError(`Only ${product.stock} available`, 400));
     }
 
-    const cart = await Cart.findOne({ userId }).populate("products.productId");
+    const cart = await Cart.findOne({ userId }).populate('products.productId', 'name price imageUrl stock');
 
     if (cart) {
       const existingProduct = cart.products.find(
@@ -140,7 +140,7 @@ export const getCartTotal = async(req, res, next) => {
     if (req.user.userId !== userId) {
       return next(new HttpError('Unauthorized', 403));
     }
-    const cart = await Cart.findOne({userId}).populate("products.productId");
+    const cart = await Cart.findOne({userId}).populate('products.productId', 'name price imageUrl stock');
     if(!cart) {
       return next(new HttpError("Cart was not found", 404));
     }

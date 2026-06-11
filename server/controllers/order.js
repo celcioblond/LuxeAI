@@ -15,7 +15,7 @@ export const createOrder = async (req, res, next) => {
     const { firstName, lastName, shippingAddress } = createOrderSchema.parse(req.body);
     const { userId, email } = req.user;
 
-    const cart = await Cart.findOne({ userId }).populate('products.productId');
+    const cart = await Cart.findOne({ userId }).populate('products.productId', 'name price imageUrl stock');
     if (!cart || cart.products.length === 0) {
       return next(new HttpError('Cart is empty', 400));
     }
