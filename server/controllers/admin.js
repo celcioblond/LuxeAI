@@ -19,8 +19,16 @@ export const getDashboardStats = async (req, res, next) => {
 
 export const getAllUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select('-password');
-    res.status(200).json({ users });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [users, total] = await Promise.all([
+      User.find().select('-password').skip(skip).limit(limit),
+      User.countDocuments(),
+    ]);
+
+    res.status(200).json({ users, total, page, limit });
   } catch (error) {
     return next(new HttpError(`Failed to get users: ${error.message}`, 500));
   }

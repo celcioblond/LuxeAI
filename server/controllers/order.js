@@ -148,8 +148,16 @@ export const getOrderById = async (req, res, next) => {
 
 export const getAllOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 });
-    res.status(200).json({ orders });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [orders, total] = await Promise.all([
+      Order.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Order.countDocuments(),
+    ]);
+
+    res.status(200).json({ orders, total, page, limit });
   } catch (error) {
     return next(new HttpError('Failed to fetch orders', 500));
   }
