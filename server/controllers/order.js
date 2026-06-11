@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import HttpError from '../models/http-error.js';
 import Order from '../models/orderModel.js';
 import Cart from '../models/cartModel.js';
+import Product from '../models/productModel.js';
 import { createOrderSchema, updateOrderStatusSchema } from '../schemas/orderSchema.js';
 
 let stripeClient = null;
@@ -90,14 +91,23 @@ export const handleStripeWebhook = async (req, res, next) => {
     const paymentIntent = event.data.object;
 
     if (event.type === 'payment_intent.succeeded') {
-      await Order.findOneAndUpdate(
+      const order = await Order.findOneAndUpdate(
         { 'stripeInfo.paymentIntentId': paymentIntent.id },
         {
           status: 'paid',
           'stripeInfo.paymentStatus': paymentIntent.status,
           'stripeInfo.paidAt': new Date(),
         },
+        { new: true },
       );
+
+      if (order) {
+        await Promise.all(
+          order.products.map((p) =>
+            Product.findByIdAndUpdate(p.productId, { $inc: { stock: -p.quantity } }),
+          ),
+        );
+      }
     }
 
     if (event.type === 'payment_intent.payment_failed') {
