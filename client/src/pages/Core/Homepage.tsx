@@ -1,6 +1,7 @@
 import useProducts from "../../hooks/useProducts";
 import CardProduct from "../../components/CardProduct";
 import MainNavigation from "../../components/Navbar/MainNavigation";
+import RecommendedProducts from "../../components/RecommendedProducts";
 
 const Homepage = () => {
 
@@ -8,6 +9,7 @@ const Homepage = () => {
 
   return (
     <MainNavigation>
+      <RecommendedProducts />
       <div className="flex items-center justify-center min-h-screen bg-slate-200 gap-5 space-x-5">
         {loadingProducts ? (
           <div className="loading loading spinner">
