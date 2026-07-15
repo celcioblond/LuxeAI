@@ -11,6 +11,7 @@ import cart from './routes/cart.js';
 import orders from './routes/orders.js';
 import { handleStripeWebhook } from './controllers/order.js';
 import products from './routes/products.js';
+import recommendations from './routes/recommendations.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -37,6 +38,7 @@ app.use('/api/products', products);
 app.use('/api/cart', cart);
 app.use('/api/admin', admin);
 app.use('/api/orders', orders);
+app.use('/api/recommendations', recommendations);
 
 app.use((_req, _res, next) => {
   next(new HttpError('Could not find this route', 404));

@@ -2,6 +2,7 @@ import { ZodError } from 'zod';
 import HttpError from '../models/http-error.js';
 import Product from '../models/productModel.js';
 import { productSchema } from '../schemas/productSchema.js';
+import { syncRecommendations } from '../utils/syncRecommendations.js';
 
 export const getAllProducts = async (req, res, next) => {
   try {
@@ -33,6 +34,7 @@ export const addProduct = async (req, res, next) => {
   try {
     const newProduct = productSchema.parse(req.body);
     const product = await Product.create(newProduct);
+    syncRecommendations();
     res.status(201).json({
       product,
     });
@@ -60,6 +62,7 @@ export const updateProduct = async (req, res, next) => {
     if (!product) {
       return next(new HttpError('Product not found', 404));
     }
+    syncRecommendations();
     res.status(200).json({
       product,
     });
@@ -75,6 +78,7 @@ export const deleteProduct = async (req, res, next) => {
     if (!product) {
       return next(new HttpError('Product not found', 404));
     }
+    syncRecommendations();
     res.status(200).json({
       message: 'Product deleted successfully',
     });
