@@ -2,58 +2,66 @@ import numpy as np
 
 
 class VectorStore:
-  def __init__(self):
-    self.product_ids = []
-    self.embeddings = None
-    self.metadata = {}
-    self.index = {}
 
-  def size(self):
-    return len(self.product_ids)
+    def __init__(self):
+        self.product_ids: list[str] = []
+        self.embeddings: np.ndarray | None = None  # (n, dim), L2-normalized rows
+        self.metadata: dict[str, dict] = {}        # product_id -> serialized product
+        self._index: dict[str, int] = {}           # product_id -> row index
 
-  def normalize(self, matrix):
-    norms = np.linalg.norm(matrix, axis=1, keepdims=True)
-    norms[norms == 0] = 1.0
-    return matrix / norms
+    def size(self) -> int:
+        return len(self.product_ids)
 
-  def build(self, product_ids, embeddings, metadata):
-    self.product_ids = product_ids
-    self.embeddings = self.normalize(embeddings) if embeddings.size else embeddings
-    self.metadata = metadata
-    self.index = { pid: i for i, pid in enumerate(product_ids) }
+    @staticmethod
+    def _normalize(matrix: np.ndarray) -> np.ndarray:
+        norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+        norms[norms == 0] = 1.0  # avoid division by zero for empty embeddings
+        return matrix / norms
 
-  def query(self, purchased_ids, limit):
-    if self.embeddings is None or self.embeddings.size == 0:
-      return []
+    def build(self, product_ids: list[str], embeddings: np.ndarray, metadata: dict[str, dict]):
+        """Replace the index with a freshly embedded catalog."""
+        self.product_ids = product_ids
+        self.embeddings = self._normalize(embeddings) if embeddings.size else embeddings
+        self.metadata = metadata
+        self._index = {pid: i for i, pid in enumerate(product_ids)}
 
-    purchased_set = set(purchased_ids)
-    rows = [self.index[pid] for pid in purchased_ids if pid in self.index]
-    if not rows:
-      return []
+    def query(self, purchased_ids: list[str], limit: int) -> list[dict]:
+        """Recommend products similar to the ones the user purchased.
 
-    purchased_vecs = self.embeddings[rows]
-    sims = self.embeddings @ purchased_vecs.T
+        Score per candidate = MAX similarity across the user's purchases. Max
+        (not average) preserves multiple distinct interests: a gothic shirt
+        scores high near the gothic purchase even if it's far from the
+        pre-workout purchase, and vice versa. Purchased and out-of-stock
+        products are excluded.
+        """
+        if self.embeddings is None or self.embeddings.size == 0:
+            return []
 
-    # score = highest similarity to any single purchase (max, not average) so
-    # multiple distinct interests (gothic, pre-workout) are each preserved
-    scores = sims.max(axis=1)
+        purchased_set = set(purchased_ids)
+        rows = [self._index[pid] for pid in purchased_ids if pid in self._index]
+        if not rows:
+            return []
 
-    # never recommend what they already bought or anything out of stock
-    for i, pid in enumerate(self.product_ids):
-      if pid in purchased_set:
-        scores[i] = -np.inf
-      elif (self.metadata.get(pid, {}).get("stock") or 0) <= 0:
-        scores[i] = -np.inf
+        purchased_vecs = self.embeddings[rows]              # (k, dim)
+        sims = self.embeddings @ purchased_vecs.T           # (n, k)
+        scores = sims.max(axis=1)                           # (n,) max aggregation
 
-    order = np.argsort(-scores)[:limit]
-    results = []
-    for i in order:
-      if not np.isfinite(scores[i]):
-        continue
-      product = dict(self.metadata[self.product_ids[i]])
-      product["score"] = round(float(scores[i]), 4)
-      results.append(product)
-    return results
+        # Mask out anything we should never recommend.
+        for i, pid in enumerate(self.product_ids):
+            if pid in purchased_set:
+                scores[i] = -np.inf
+            elif (self.metadata.get(pid, {}).get("stock") or 0) <= 0:
+                scores[i] = -np.inf
+
+        order = np.argsort(-scores)[:limit]
+        results = []
+        for i in order:
+            if not np.isfinite(scores[i]):
+                continue
+            product = dict(self.metadata[self.product_ids[i]])
+            product["score"] = round(float(scores[i]), 4)
+            results.append(product)
+        return results
 
 
 store = VectorStore()
