@@ -58,6 +58,7 @@ describe('POST /api/orders', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });

@@ -7,6 +7,7 @@ def serialize(doc):
     "name": doc.get("name"),
     "price": doc.get("price"),
     "description": doc.get("description"),
+    "category": doc.get("category"),
     "stock": doc.get("stock"),
     "imageUrl": doc.get("imageUrl"),
   }

@@ -29,6 +29,7 @@ interface Product {
   name: string;
   price: number;
   description: string;
+  category: string;
   stock: number;
   imageUrl: string;
 }
@@ -44,6 +45,7 @@ interface AddProductPayload {
   name: string;
   price: number;
   description: string;
+  category: string;
   stock: number;
   imageUrl: string;
 }
@@ -52,6 +54,7 @@ interface UpdateProductPayload {
   name?: string;
   price?: number;
   description?: string;
+  category?: string;
   stock?: number;
   imageUrl?: string;
 }

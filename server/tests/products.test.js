@@ -35,6 +35,7 @@ describe('GET /api/products', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -53,6 +54,7 @@ describe('GET /api/products/:id', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -97,6 +99,7 @@ describe('POST /api/products', () => {
         name: 'Luxury Watch',
         price: 299.99,
         description: 'A premium timepiece for the discerning buyer',
+        category: 'Accessories',
         stock: 10,
         imageUrl: 'https://example.com/watch.jpg',
       });
@@ -112,6 +115,7 @@ describe('POST /api/products', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -144,6 +148,7 @@ describe('PATCH /api/products/:id', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -173,6 +178,7 @@ describe('PATCH /api/products/:id', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -200,6 +206,7 @@ describe('DELETE /api/products/:id', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -228,6 +235,7 @@ describe('DELETE /api/products/:id', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -253,6 +261,7 @@ describe('Cache behavior', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -270,6 +279,7 @@ describe('Cache behavior', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -287,6 +297,7 @@ describe('Cache behavior', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -309,6 +320,7 @@ describe('Cache behavior', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -335,6 +347,7 @@ describe('Cache behavior', () => {
         name: 'Diamond Ring',
         price: 1999.99,
         description: 'A stunning diamond ring for special occasions',
+        category: 'Accessories',
         stock: 5,
         imageUrl: 'https://example.com/ring.jpg',
       });

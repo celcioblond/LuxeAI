@@ -48,6 +48,7 @@ afterEach(async () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -93,6 +94,7 @@ describe('POST /api/cart/addToCart', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -112,6 +114,7 @@ describe('POST /api/cart/addToCart', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -134,6 +137,7 @@ describe('POST /api/cart/addToCart', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -156,6 +160,7 @@ describe('POST /api/cart/addToCart', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -190,6 +195,7 @@ describe('PATCH /api/cart/updateCart/:userId', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -235,6 +241,7 @@ describe('PATCH /api/cart/updateCart/:userId', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -256,6 +263,7 @@ describe('DELETE /api/cart/deleteProduct/:userId/:productId', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -304,6 +312,7 @@ describe('GET /api/cart/total/:userId', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });
@@ -342,6 +351,7 @@ describe('DELETE /api/cart/clearCart/:userId', () => {
       name: 'Luxury Watch',
       price: 299.99,
       description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
       stock: 10,
       imageUrl: 'https://example.com/watch.jpg',
     });

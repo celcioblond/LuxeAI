@@ -9,16 +9,28 @@ interface Product {
   name: string;
   price: number;
   description: string;
+  category: string;
   stock: number;
   imageUrl: string;
 }
 
 type ProductForm = Omit<Product, '_id'>;
 
+// Predefined categories keep the recommendation clusters clean and consistent.
+const CATEGORIES = [
+  'Fitness',
+  'Apparel',
+  'Kitchen',
+  'Tech',
+  'Skincare',
+  'Accessories',
+] as const;
+
 const emptyForm: ProductForm = {
   name: '',
   price: 0,
   description: '',
+  category: '',
   stock: 0,
   imageUrl: '',
 };
@@ -48,7 +60,7 @@ const AdminProducts = () => {
 
   const openEdit = (product: Product) => {
     setEditingProduct(product);
-    setForm({ name: product.name, price: product.price, description: product.description, stock: product.stock, imageUrl: product.imageUrl });
+    setForm({ name: product.name, price: product.price, description: product.description, category: product.category, stock: product.stock, imageUrl: product.imageUrl });
     setModalOpen(true);
   };
 
@@ -119,6 +131,7 @@ const AdminProducts = () => {
               <tr className="border-b border-gray-200">
                 <th className="text-left py-3 text-gray-500 font-medium uppercase tracking-widest text-xs">Product</th>
                 <th className="text-left py-3 text-gray-500 font-medium uppercase tracking-widest text-xs">Price</th>
+                <th className="text-left py-3 text-gray-500 font-medium uppercase tracking-widest text-xs hidden sm:table-cell">Category</th>
                 <th className="text-left py-3 text-gray-500 font-medium uppercase tracking-widest text-xs">Stock</th>
                 <th className="text-left py-3 text-gray-500 font-medium uppercase tracking-widest text-xs hidden md:table-cell">Description</th>
                 <th className="text-right py-3 text-gray-500 font-medium uppercase tracking-widest text-xs">Actions</th>
@@ -142,6 +155,15 @@ const AdminProducts = () => {
                     <span className="inline-block px-3 py-0.5 bg-amber-300 rounded-2xl text-sm font-semibold">
                       ${product.price.toFixed(2)}
                     </span>
+                  </td>
+                  <td className="py-4 text-gray-600 hidden sm:table-cell">
+                    {product.category ? (
+                      <span className="inline-block px-3 py-0.5 bg-slate-100 rounded-2xl text-xs font-medium">
+                        {product.category}
+                      </span>
+                    ) : (
+                      <span className="text-gray-300">—</span>
+                    )}
                   </td>
                   <td className="py-4 text-gray-600">
                     {product.stock === 0 ? (
@@ -199,6 +221,19 @@ const AdminProducts = () => {
                   />
                 </div>
               ))}
+              <div>
+                <label className="block text-xs text-gray-500 uppercase tracking-widest mb-1">Category</label>
+                <select
+                  value={form.category}
+                  onChange={e => setField('category', e.target.value)}
+                  className="w-full border-0 border-b-2 border-gray-300 outline-none pb-1 text-gray-700 focus:border-black transition-colors bg-transparent"
+                >
+                  <option value="" disabled>Select a category</option>
+                  {CATEGORIES.map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+              </div>
               {([
                 { key: 'price', label: 'Price', step: '0.01' },
                 { key: 'stock', label: 'Stock', step: '1' },

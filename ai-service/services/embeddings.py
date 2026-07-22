@@ -23,5 +23,6 @@ def embed(texts):
 
 def product_text(product):
   name = product.get("name") or ""
+  category = product.get("category") or ""
   description = product.get("description") or ""
-  return f"{name}. {description}".strip()
+  return f"{name}. {category}. {description}".strip()
