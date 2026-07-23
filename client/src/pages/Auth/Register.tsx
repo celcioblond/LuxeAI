@@ -58,20 +58,20 @@ const Register = () => {
   return (
     <>
       {loading ? (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-400 via-orange-400 to-amber-400">
           <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md flex flex-col items-center gap-6">
-            <div className="w-14 h-14 rounded-full border-4 border-teal-200 border-t-cyan-500 animate-spin" />
-            <p className="text-cyan-500 font-bold tracking-wide text-lg">
+            <div className="w-14 h-14 rounded-full border-4 border-red-200 border-t-orange-500 animate-spin" />
+            <p className="text-orange-500 font-bold tracking-wide text-lg">
               Loading...
             </p>
           </div>
         </div>
       ) : (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-400 via-cyan-400 to-green-400">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-400 via-orange-400 to-amber-400">
           <div className="bg-white rounded-2xl shadow-2xl px-10 py-10 w-full max-w-md relative">
             <form onSubmit={handleSubmit}>
               <div className="text-center mb-8">
-                <h1 className="text-2xl font-bold text-cyan-500 tracking-wide">
+                <h1 className="text-2xl font-bold text-orange-500 tracking-wide">
                   Register
                 </h1>
               </div>
@@ -93,7 +93,7 @@ const Register = () => {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleNameChange(e)
                   }
-                  className="w-full border-0 border-b-2 border-teal-400 outline-none pb-1 text-gray-700 placeholder-gray-300 focus:border-cyan-500 transition-colors bg-transparent"
+                  className="w-full border-0 border-b-2 border-red-400 outline-none pb-1 text-gray-700 placeholder-gray-300 focus:border-orange-500 transition-colors bg-transparent"
                 />
               </div>
 
@@ -114,7 +114,7 @@ const Register = () => {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleEmailChange(e)
                   }
-                  className="w-full border-0 border-b-2 border-teal-400 outline-none pb-1 text-gray-700 placeholder-gray-300 focus:border-cyan-500 transition-colors bg-transparent"
+                  className="w-full border-0 border-b-2 border-red-400 outline-none pb-1 text-gray-700 placeholder-gray-300 focus:border-orange-500 transition-colors bg-transparent"
                 />
                 <p
                   className={`text-xs text-red-400 mt-2 ${email && !isValidEmail ? '' : 'hidden'}`}
@@ -145,7 +145,7 @@ const Register = () => {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handlePasswordChange(e)
                   }
-                  className="w-full border-0 border-b-2 border-teal-400 outline-none pb-1 text-gray-700 placeholder-gray-300 focus:border-cyan-500 transition-colors bg-transparent"
+                  className="w-full border-0 border-b-2 border-red-400 outline-none pb-1 text-gray-700 placeholder-gray-300 focus:border-orange-500 transition-colors bg-transparent"
                 />
                 <p
                   className={`text-xs text-red-400 mt-2 ${password && !isValidPassword ? '' : 'hidden'}`}
@@ -169,7 +169,7 @@ const Register = () => {
                 <button
                   type="submit"
                   disabled={!isValidEmail || !isValidPassword || loading}
-                  className="w-full py-3 rounded-lg bg-gradient-to-r from-teal-400 to-cyan-500 text-white font-bold tracking-widest uppercase text-sm hover:from-teal-500 hover:to-cyan-600 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
+                  className="w-full py-3 rounded-lg bg-gradient-to-r from-red-400 to-orange-500 text-white font-bold tracking-widest uppercase text-sm hover:from-red-500 hover:to-orange-600 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
                 >
                   Register
                 </button>
@@ -179,7 +179,7 @@ const Register = () => {
                 Already registered?
                 <a
                   href="/login"
-                  className="text-cyan-500 font-medium hover:underline"
+                  className="text-orange-500 font-medium hover:underline"
                 >
                   Log in
                 </a>
