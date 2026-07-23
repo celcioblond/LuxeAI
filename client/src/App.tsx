@@ -21,6 +21,7 @@ import AdminOrders from './pages/Admin/AdminOrders';
 import Checkout from './pages/Core/Checkout';
 import OrderConfirmation from './pages/Core/OrderConfirmation';
 import MyOrders from './pages/Core/MyOrders';
+import Recommendations from './pages/Core/Recommendations';
 import {Toaster } from "react-hot-toast";
 import { CartProvider } from './context/CartContext';
 
@@ -41,6 +42,7 @@ const App = () => {
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
                 <Route path="/orders" element={<MyOrders />} />
+                <Route path="/recommendations" element={<Recommendations />} />
               </Route>
               <Route element={<AdminRoute />}>
                 <Route path="/admin-dashboard" element={<DashboardLayout />}>
