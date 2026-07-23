@@ -60,7 +60,7 @@ const AdminProducts = () => {
 
   const openEdit = (product: Product) => {
     setEditingProduct(product);
-    setForm({ name: product.name, price: product.price, description: product.description, category: product.category, stock: product.stock, imageUrl: product.imageUrl });
+    setForm({ name: product.name, price: product.price, description: product.description, category: product.category ?? '', stock: product.stock, imageUrl: product.imageUrl });
     setModalOpen(true);
   };
 
