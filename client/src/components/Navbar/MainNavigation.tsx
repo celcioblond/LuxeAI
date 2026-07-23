@@ -1,17 +1,21 @@
+import { NavLink } from 'react-router-dom';
 import Navlinks from './Navlinks';
 
 const MainNavigation = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200 shadow-sm">
-        <h1 className="text-xl font-bold tracking-widest uppercase">
+      <header className="flex items-center justify-between px-8 py-4 bg-blue-900">
+        <NavLink
+          to="/homepage"
+          className="text-2xl font-bold uppercase tracking-tight text-white transition-colors hover:text-amber-400"
+        >
           E-commerce
-        </h1>
+        </NavLink>
         <nav>
           <Navlinks />
         </nav>
       </header>
-      <main>{children}</main>
+      <main className="min-h-screen bg-slate-300">{children}</main>
     </>
   );
 };
