@@ -31,6 +31,23 @@ type AuthContextRes = {
   isAuthenticated: () =>  boolean;
 };
 
+// Decode the JWT payload (base64url) without a library so we can read `exp`.
+const getTokenPayload = (token: string): { exp?: number } | null => {
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64));
+  } catch {
+    return null;
+  }
+};
+
+const isTokenExpired = (token: string | null): boolean => {
+  if (!token) return true;
+  const payload = getTokenPayload(token);
+  if (!payload?.exp) return true;
+  return payload.exp * 1000 <= Date.now();
+};
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextRes | null>(null);
 
@@ -42,12 +59,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-    if (storedToken && storedUser) {
+    if (storedToken && storedUser && !isTokenExpired(storedToken)) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
+    } else {
+      // Drop an expired/invalid session so guarded routes don't render.
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
     }
-    
+
     setLoading(false);
   }, []);
 
@@ -77,11 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const isAdmin = (): boolean => {
-    if (user?.role === "admin") {
-      return true
-    } else {
-      return false
-    }
+    return user?.role === "admin" && !isTokenExpired(token);
   };
 
   const getUserId = (): string => {
@@ -89,7 +106,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const isAuthenticated = (): boolean => {
-    return token ? true : false;
+    return !!token && !isTokenExpired(token);
   }
 
   const data = {
