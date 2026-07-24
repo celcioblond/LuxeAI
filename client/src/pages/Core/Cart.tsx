@@ -1,5 +1,6 @@
 import { useCart } from '../../hooks/useCart';
 import { Link, useNavigate } from 'react-router-dom';
+import MainNavigation from '../../components/Navbar/MainNavigation';
 import { FaShoppingCart, FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
@@ -52,66 +53,40 @@ const Cart = () => {
     await updateQuantity(productId, currentQty + 1);
   };
 
-  if (loading && !cart) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-300">
-        <p className="text-gray-600 text-lg">Loading cart...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-slate-300">
-      {/* Header */}
-      <header className="flex bg-blue-900 justify-between items-center px-8 py-4">
-        <Link
-          to="/homepage"
-          className="bg-black text-white px-5 py-2 rounded-2xl hover:bg-amber-500 transition-colors text-sm font-medium"
-        >
-          Home
-        </Link>
-        <h1 className="text-3xl text-white font-bold tracking-tight">
-          Shopping Cart
-        </h1>
-        <div className="flex items-center gap-2 text-white">
-          <FaShoppingCart size={20} />
-          <span className="text-lg font-semibold">{quantity} items</span>
+    <MainNavigation>
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+            Shopping Cart
+          </h1>
+          <div className="flex items-center gap-2 text-gray-500">
+            <FaShoppingCart size={18} />
+            <span className="text-sm font-medium">{quantity} items</span>
+          </div>
         </div>
-      </header>
 
-      <div className="max-w-3xl mx-auto py-10 px-4">
-        {/* Empty state */}
-        {!cart || cart.products.length === 0 ? (
-          <div className="text-center py-20">
-            <FaShoppingCart size={60} className="mx-auto text-gray-400 mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-600 mb-6">
-              Your cart is empty
-            </h2>
+        {/* Loading state */}
+        {loading && !cart ? (
+          <div className="flex flex-col items-center rounded-2xl bg-white p-8 shadow-2xl">
+            <p className="text-gray-400">Loading cart...</p>
+          </div>
+        ) : !cart || cart.products.length === 0 ? (
+          /* Empty state */
+          <div className="flex flex-col items-center space-y-4 rounded-2xl bg-white p-8 shadow-2xl">
+            <FaShoppingCart size={48} className="text-gray-300" />
+            <p className="text-gray-500 text-lg">Your cart is empty</p>
             <Link
               to="/homepage"
-              className="bg-blue-900 text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition-colors font-medium"
+              className="bg-black text-white px-5 py-2 rounded-2xl hover:bg-amber-500 transition-colors text-sm font-medium"
             >
               Continue Shopping
             </Link>
           </div>
         ) : (
           <div
-            className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-opacity duration-200 ${updating ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}
+            className={`overflow-hidden rounded-2xl bg-white shadow-2xl transition-opacity duration-200 ${updating ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}
           >
-            {/* Card header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-bold text-gray-800">
-                Shopping Cart
-              </h2>
-              <button
-                onClick={() => navigate('/homepage')}
-                className="text-gray-400 hover:text-gray-600 text-xl font-light transition-colors"
-                aria-label="Close cart"
-              >
-                ✕
-              </button>
-            </div>
-
             {/* Product rows */}
             <div className="divide-y divide-gray-100">
               {cart.products.map((item) => (
@@ -123,7 +98,7 @@ const Cart = () => {
                   <img
                     src={item.productId.imageUrl}
                     alt={item.productId.name}
-                    className="w-16 h-16 object-cover rounded-lg border border-gray-200 flex-shrink-0"
+                    className="w-16 h-16 object-cover rounded-2xl border border-gray-100 flex-shrink-0"
                   />
 
                   {/* Name + unit price */}
@@ -206,21 +181,21 @@ const Cart = () => {
               <button
                 onClick={handleClearCart}
                 disabled={updating}
-                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-2xl transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Clear cart
               </button>
               <button
                 onClick={() => navigate('/homepage')}
                 disabled={updating}
-                className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-2xl transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue shopping
               </button>
               <button
                 onClick={() => navigate('/checkout')}
                 disabled={updating}
-                className="ml-auto px-5 py-2 bg-black text-white rounded-lg font-medium text-sm hover:bg-amber-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ml-auto px-5 py-2 bg-black text-white rounded-2xl font-medium text-sm hover:bg-amber-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Proceed to checkout
               </button>
@@ -228,7 +203,7 @@ const Cart = () => {
           </div>
         )}
       </div>
-    </div>
+    </MainNavigation>
   );
 };
 
