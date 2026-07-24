@@ -12,15 +12,19 @@ const DashboardLayout = () => {
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     isActive
-      ? 'font-semibold underline'
-      : 'text-gray-600 hover:text-black transition-colors';
+      ? 'text-white font-semibold underline'
+      : 'text-white/80 hover:text-amber-400 transition-colors';
 
   return (
-    <div className="min-h-screen bg-slate-200">
-      <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200 shadow-sm">
-        <h1 className="text-xl font-bold tracking-widest uppercase">
+    <div className="min-h-screen bg-slate-300">
+      <header className="flex items-center justify-between px-8 py-4 bg-blue-900">
+        <NavLink
+          to="/admin-dashboard"
+          end
+          className="text-2xl font-bold uppercase tracking-tight text-white transition-colors hover:text-amber-400"
+        >
           Admin Panel
-        </h1>
+        </NavLink>
         <nav>
           <ul className="flex items-center gap-6 list-none">
             <li>
@@ -43,12 +47,12 @@ const DashboardLayout = () => {
                 Orders
               </NavLink>
             </li>
-            <li><span className="text-gray-300">|</span></li>
-            <li className="text-sm text-gray-500">{auth?.user?.name}</li>
+            <li><span className="text-white/30">|</span></li>
+            <li className="text-sm text-white/70">{auth?.user?.name}</li>
             <li>
               <button
                 onClick={handleLogout}
-                className="text-gray-600 hover:text-black transition-colors"
+                className="text-white/80 hover:text-amber-400 transition-colors"
               >
                 Logout
               </button>
