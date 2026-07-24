@@ -32,10 +32,10 @@ async def get_recommendations(user_id, limit=None):
     top = limit or settings.default_limit
     purchased = await Order.find_purchased_product_ids(user_id)
 
-    # Cold start: no purchase history yet, fall back to newest in-stock products
+    # Cold start: no purchase history yet — return nothing so the client can
+    # prompt the user to make a purchase before recommendations appear
     if not purchased:
-      fallback = await Product.find_fallback(top)
-      return { "recommendations": fallback }
+      return { "recommendations": [] }
 
     results = store.query(purchased, top)
 

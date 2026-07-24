@@ -37,7 +37,7 @@ const Recommendations = () => {
           </div>
         ) : products.length === 0 ? (
           <div className="flex flex-col items-center space-y-4 rounded-2xl bg-white p-8 shadow-2xl">
-            <p className="text-gray-500 text-lg">No recommendations yet.</p>
+            <p className="text-gray-500 text-lg">Make a purchase to start getting recommended products!</p>
             <Link
               to="/homepage"
               className="bg-black text-white px-5 py-2 rounded-2xl hover:bg-amber-500 transition-colors text-sm font-medium"
