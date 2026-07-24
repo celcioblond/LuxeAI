@@ -116,7 +116,7 @@ const Register = () => {
                   }
                   className="w-full border-0 border-b-2 border-red-400 outline-none pb-1 text-gray-700 placeholder-gray-300 focus:border-orange-500 transition-colors bg-transparent"
                 />
-                <p
+                <div
                   className={`text-xs text-red-400 mt-2 ${email && !isValidEmail ? '' : 'hidden'}`}
                 >
                   Email requirements:
@@ -125,7 +125,7 @@ const Register = () => {
                     <li>Can include . _ % + - in the middle</li>
                     <li>Must contain @</li>
                   </ul>
-                </p>
+                </div>
               </div>
 
               <div className="mb-8">
