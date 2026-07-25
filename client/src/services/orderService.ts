@@ -69,6 +69,15 @@ export const createOrderService = async (payload: CreateOrderPayload): Promise<C
   }
 };
 
+export const confirmOrderService = async (id: string): Promise<Order> => {
+  try {
+    const response = await api.post(`/api/orders/${id}/confirm`);
+    return response.data.order;
+  } catch (error) {
+    throw new Error(toMessage(error));
+  }
+};
+
 export const getMyOrdersService = async (): Promise<Order[]> => {
   try {
     const response = await api.get('/api/orders/me');

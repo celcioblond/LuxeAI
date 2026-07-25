@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { createOrderService } from '../../services/orderService';
+import { createOrderService, confirmOrderService } from '../../services/orderService';
 import { useCart } from '../../hooks/useCart';
 import toast from 'react-hot-toast';
 
@@ -100,6 +100,16 @@ const CheckoutForm = () => {
     }
 
     if (paymentIntent?.status === 'succeeded') {
+      // Mark the order paid server-side (verified against Stripe). If it fails,
+      // the payment still went through — navigate anyway and let the webhook
+      // reconcile the status.
+      if (orderId) {
+        try {
+          await confirmOrderService(orderId);
+        } catch {
+          // swallow: payment succeeded, status will reconcile via webhook
+        }
+      }
       await clearCart();
       toast.success('Payment successful!');
       navigate(`/order-confirmation/${orderId}`);
