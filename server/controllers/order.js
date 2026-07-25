@@ -190,3 +190,58 @@ export const updateOrderStatus = async (req, res, next) => {
     return next(new HttpError('Failed to update order status', 500));
   }
 };
+
+// Called by the client right after Stripe confirms the card payment. Instead of
+// trusting the client, we re-read the PaymentIntent from Stripe and only mark
+// the order paid if Stripe itself reports 'succeeded'. This makes the happy path
+// work without the Stripe CLI/webhook running locally; the webhook stays as a
+// backup for cases where the browser closes before this call.
+export const confirmOrder = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.user;
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return next(new HttpError('Order not found', 404));
+    }
+    if (order.customer.userId.toString() !== userId) {
+      return next(new HttpError('Unauthorized', 403));
+    }
+
+    // Already confirmed (e.g. the webhook beat us) — idempotent no-op
+    if (order.status === 'paid') {
+      return res.status(200).json({ order });
+    }
+
+    const paymentIntent = await getStripe().paymentIntents.retrieve(
+      order.stripeInfo.paymentIntentId,
+    );
+    if (paymentIntent.status !== 'succeeded') {
+      return next(new HttpError('Payment not completed', 400));
+    }
+
+    // Atomic pending -> paid: only the winner decrements stock, so a concurrent
+    // webhook can't double-decrement.
+    const paidOrder = await Order.findOneAndUpdate(
+      { _id: id, status: { $ne: 'paid' } },
+      {
+        status: 'paid',
+        'stripeInfo.paymentStatus': paymentIntent.status,
+        'stripeInfo.paidAt': new Date(),
+      },
+      { new: true },
+    );
+
+    if (paidOrder) {
+      await decrementStock(paidOrder);
+      return res.status(200).json({ order: paidOrder });
+    }
+
+    // The webhook flipped it between our read and update — return current state
+    const current = await Order.findById(id);
+    res.status(200).json({ order: current });
+  } catch (error) {
+    return next(new HttpError('Failed to confirm order', 500));
+  }
+};
