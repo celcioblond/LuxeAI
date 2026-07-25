@@ -11,6 +11,17 @@ const getStripe = () => {
   return stripeClient;
 };
 
+// Decrement stock for every product in an order. Called exactly once per order:
+// by whichever path (webhook or client confirmation) wins the atomic
+// pending -> paid transition, so stock is never double-decremented.
+const decrementStock = async (order) => {
+  await Promise.all(
+    order.products.map((p) =>
+      Product.findByIdAndUpdate(p.productId, { $inc: { stock: -p.quantity } }),
+    ),
+  );
+};
+
 export const createOrder = async (req, res, next) => {
   try {
     const { firstName, lastName, shippingAddress } = createOrderSchema.parse(req.body);
@@ -102,11 +113,7 @@ export const handleStripeWebhook = async (req, res, next) => {
       );
 
       if (order) {
-        await Promise.all(
-          order.products.map((p) =>
-            Product.findByIdAndUpdate(p.productId, { $inc: { stock: -p.quantity } }),
-          ),
-        );
+        await decrementStock(order);
       }
     }
 
