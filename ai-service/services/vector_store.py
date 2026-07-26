@@ -42,6 +42,16 @@ class VectorStore:
         if not rows:
             return []
 
+        # Categories the user has actually purchased from. Recommendations are
+        # restricted to these so we never suggest an unrelated category just to
+        # fill the limit. Empty (e.g. legacy products without a category) means
+        # no category constraint, falling back to pure similarity.
+        def category_of(pid):
+            return (self.metadata.get(pid, {}).get("category") or "").strip().lower()
+
+        purchased_categories = {category_of(pid) for pid in purchased_ids if pid in self._index}
+        purchased_categories.discard("")
+
         purchased_vecs = self.embeddings[rows]              # (k, dim)
         sims = self.embeddings @ purchased_vecs.T           # (n, k)
         scores = sims.max(axis=1)                           # (n,) max aggregation
@@ -51,6 +61,8 @@ class VectorStore:
             if pid in purchased_set:
                 scores[i] = -np.inf
             elif (self.metadata.get(pid, {}).get("stock") or 0) <= 0:
+                scores[i] = -np.inf
+            elif purchased_categories and category_of(pid) not in purchased_categories:
                 scores[i] = -np.inf
 
         order = np.argsort(-scores)[:limit]
