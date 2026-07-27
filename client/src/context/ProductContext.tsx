@@ -4,9 +4,19 @@ import {
   getProduct as fetchProduct,
 } from '../services/productService';
 
+export interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  description: string;
+  category: string;
+  stock: number;
+  imageUrl: string;
+}
+
 type ProductContextType = {
-  products: any[];
-  product: any;
+  products: Product[];
+  product: Product | null;
   getProducts: () => Promise<void>;
   getProduct: (id: string) => Promise<void>;
   loadingProducts: boolean;
@@ -21,8 +31,8 @@ export const ProductProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [products, setProducts] = useState<any[]>([]);
-  const [product, setProduct] = useState<any>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState(false);
   const [error, setError] = useState('');

@@ -11,6 +11,7 @@ const ProductDetails = () => {
   const {addToCart, quantity} = useCart();
 
   const handleAddToCart = async () => {
+    if (!product) return;
     await addToCart(product._id, 1)
     toast.success(`${product.name} added successfully`)
   }
