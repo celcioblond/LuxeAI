@@ -17,14 +17,14 @@ afterEach(async () => {
 });
 
 describe('POST /api/auth/register', () => {
-  test('should return 200 with token and user data', async () => {
+  test('should return 201 with token and user data', async () => {
     const response = await request(app).post('/api/auth/register').send({
       name: 'Ryan Ray',
       email: 'ryanray@outlook.com',
       password: 'Password1!',
     });
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(201);
     expect(response.body.token).toBeDefined();
     expect(response.body.user).toEqual(
       expect.objectContaining({
@@ -49,7 +49,7 @@ describe('POST /api/auth/register', () => {
       password: 'Password1!',
     });
 
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
     expect(response.body.user.role).toBe('user');
   });
 
