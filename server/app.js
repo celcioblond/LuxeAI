@@ -33,6 +33,9 @@ app.use('/api/webhooks/stripe', express.raw({ type: 'application/json' }));
 app.post('/api/webhooks/stripe', handleStripeWebhook);
 app.use(express.json({ limit: '10kb' }));
 
+// Lightweight liveness probe for Docker/AWS health checks (no DB dependency)
+app.get('/health', (_req, res) => res.status(200).json({ status: 'ok' }));
+
 app.use('/api/auth', auth);
 app.use('/api/products', products);
 app.use('/api/cart', cart);
