@@ -17,7 +17,7 @@ const ProductDetails = () => {
   }
 
   useEffect(() => {
-    getProduct(id);
+    if (id) getProduct(id);
   }, [id, getProduct]);
 
   if (loadingProduct || !product) {
