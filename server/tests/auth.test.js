@@ -134,22 +134,22 @@ describe('POST /api/auth/login', () => {
     expect(response.body.user.password).toBeUndefined();
   });
 
-  test('email does not exist should return status 400', async () => {
+  test('email does not exist should return generic 401', async () => {
     const response = await request(app).post('/api/auth/login').send({
       email: 'doesnotexist@gmail.com',
       password: 'Password1!',
     });
-    expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe('User was not found');
+    expect(response.statusCode).toBe(401);
+    expect(response.body.message).toBe('Invalid credentials');
   });
 
-  test('wrong password should return status 401', async () => {
+  test('wrong password should return generic 401', async () => {
     const response = await request(app).post('/api/auth/login').send({
       email: 'ryanray@outlook.com',
       password: 'invalidPASS',
     });
     expect(response.statusCode).toBe(401);
-    expect(response.body.message).toBe('Password is invalid');
+    expect(response.body.message).toBe('Invalid credentials');
   });
 
   test('invalid email format should return status 400', async () => {

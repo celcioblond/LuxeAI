@@ -54,12 +54,14 @@ export const login = async (req, res, next) => {
 
     const user = await User.findOne({email}).select('+password');
     if(!user) {
-      return next(new HttpError("User was not found", 400));
+      // Generic message + status for both branches so an attacker can't tell
+      // whether the email exists (prevents user enumeration).
+      return next(new HttpError("Invalid credentials", 401));
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if(!passwordMatch) {
-      return next(new HttpError("Password is invalid", 401));
+      return next(new HttpError("Invalid credentials", 401));
     }
     const token = jwt.sign({
       userId: user._id.toString(),
