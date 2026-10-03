@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./server
+    ports:
+      - '5001:5001'
+    volumes:
+      - ./server:/backend
+      - /backend/node_modules
+    env_file:
+      - ./server/.env
+    container_name: luxeai-back
+  frontend:
+    build: ./client
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./client/src:/frontend/src
+    container_name: luxeai-front
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
