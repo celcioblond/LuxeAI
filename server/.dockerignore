@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log*
+.env
+.env.*
+coverage
+tests
+jest.config.js
+Dockerfile
+.dockerignore
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+requests.http
+*.md
