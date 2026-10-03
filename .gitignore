@@ -15,3 +15,7 @@ Thumbs.db
 
 # Requests
 requests.http
+
+# Build
+
+build/
