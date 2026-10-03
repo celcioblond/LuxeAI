@@ -4,12 +4,12 @@ import express from 'express';
 import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { handleStripeWebhook } from './controllers/order.js';
 import HttpError from './models/http-error.js';
 import admin from './routes/admin.js';
 import auth from './routes/auth.js';
 import cart from './routes/cart.js';
 import orders from './routes/orders.js';
-import { handleStripeWebhook } from './controllers/order.js';
 import products from './routes/products.js';
 import recommendations from './routes/recommendations.js';
 
@@ -33,7 +33,7 @@ app.use('/api/webhooks/stripe', express.raw({ type: 'application/json' }));
 app.post('/api/webhooks/stripe', handleStripeWebhook);
 app.use(express.json({ limit: '10kb' }));
 
-// Lightweight liveness probe for Docker/AWS health checks (no DB dependency)
+// Lightweight liveness probe for Docker/AWS health checks
 app.get('/health', (_req, res) => res.status(200).json({ status: 'ok' }));
 
 app.use('/api/auth', auth);
