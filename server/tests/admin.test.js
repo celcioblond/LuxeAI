@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
 import app from '../app.js';
-import User from '../models/userModel.js';
-import Product from '../models/productModel.js';
 import Order from '../models/orderModel.js';
+import Product from '../models/productModel.js';
+import User from '../models/userModel.js';
 
 let adminToken;
 let userToken;
@@ -43,7 +43,6 @@ afterEach(async () => {
   await Order.deleteMany({});
 });
 
-// ---------------------------------------------------------------------------
 describe('GET /api/admin/stats', () => {
   test('should return 200 with userCount, productCount and orderCount when admin', async () => {
     const response = await request(app)
@@ -71,7 +70,6 @@ describe('GET /api/admin/stats', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
 describe('GET /api/admin/users', () => {
   test('should return 200 with users array when admin', async () => {
     const response = await request(app)
@@ -108,7 +106,6 @@ describe('GET /api/admin/users', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
 describe('PATCH /api/admin/users/:id', () => {
   test('should return 200 with updated user when admin sends valid data', async () => {
     const response = await request(app)
@@ -150,7 +147,6 @@ describe('PATCH /api/admin/users/:id', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
 describe('DELETE /api/admin/users/:id', () => {
   test('should return 200 with success message when admin deletes a user', async () => {
     const response = await request(app)
@@ -172,7 +168,9 @@ describe('DELETE /api/admin/users/:id', () => {
   });
 
   test('should return 401 when no token is provided', async () => {
-    const response = await request(app).delete(`/api/admin/users/${regularUserId}`);
+    const response = await request(app).delete(
+      `/api/admin/users/${regularUserId}`,
+    );
 
     expect(response.statusCode).toBe(401);
   });
@@ -186,7 +184,6 @@ describe('DELETE /api/admin/users/:id', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
 describe('GET /api/admin/orders', () => {
   test('should return 200 with orders array when admin', async () => {
     const response = await request(app)
@@ -212,7 +209,6 @@ describe('GET /api/admin/orders', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
 describe('PATCH /api/admin/orders/:id/status', () => {
   test('should return 200 with updated order when admin changes status', async () => {
     const order = await Order.create({
@@ -241,7 +237,11 @@ describe('PATCH /api/admin/orders/:id/status', () => {
       },
       totalAmount: { subtotal: 299.99, tax: 30, shipping: 0, total: 329.99 },
       status: 'pending',
-      stripeInfo: { paymentIntentId: 'pi_test', clientSecret: 'secret', paymentStatus: 'requires_payment_method' },
+      stripeInfo: {
+        paymentIntentId: 'pi_test',
+        clientSecret: 'secret',
+        paymentStatus: 'requires_payment_method',
+      },
     });
 
     const response = await request(app)
