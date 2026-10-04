@@ -1,7 +1,35 @@
-.gitignore
-.env
+# .dockerignore for frontend
 node_modules
+
+# Build and caches 
 dist
+dist-ssr
+coverage
+.vite
+
+# Secrets and environment variables
+.env
+.env.*
+*.local
+
+# Logs 
+logs
+*.log
+npm-debug.log*
+
+# Git
+.git
+.gitignore
+
+# Docker
 Dockerfile
 .dockerignore
+
+# OS / IDE
+.vscode
+.idea
 .DS_Store
+
+# Documentation
+README.md
+
