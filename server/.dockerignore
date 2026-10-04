@@ -1,16 +1,33 @@
+# .dockerignore for backend
 node_modules
-npm-debug.log*
+
+# Secrets and environment variables
 .env
 .env.*
-coverage
+
+# Tests
 tests
+coverage
 jest.config.js
-Dockerfile
-.dockerignore
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Git
 .git
 .gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# OS / IDE
 .vscode
 .idea
 .DS_Store
+
+# Local development files and documentation
 requests.http
-*.md
+README.md
