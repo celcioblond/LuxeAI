@@ -10,8 +10,12 @@ services:
       - ./server/.env
     environment:
       AI_SERVICE_URL: http://microservice:8000
+      MONGODB_URI: ${DOCKER_MONGODB_URI:-mongodb://mongo:27017/luxeai}
     depends_on:
-      - microservice
+      mongo:
+        condition: service_healthy
+      microservice:
+        condition: service_started
     container_name: luxeai-back
   frontend:
     build: ./client
@@ -34,3 +38,18 @@ services:
     volumes:
       - ./ai-service/src:/app/src
     command: fastapi dev src/main.py --host 0.0.0.0
+  mongo:
+    image: mongo:8
+    container_name: luxeai-mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mongo-data:
