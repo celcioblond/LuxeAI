@@ -8,6 +8,10 @@ services:
       - /backend/node_modules
     env_file:
       - ./server/.env
+    environment:
+      AI_SERVICE_URL: http://microservice:8000
+    depends_on:
+      - microservice
     container_name: luxeai-back
   frontend:
     build: ./client
@@ -22,3 +26,11 @@ services:
     tty: true
     depends_on:
       - backend
+  microservice:
+    build: ./ai-service
+    ports:
+      - '8000:8000'
+    container_name: luxeai-microservice
+    volumes:
+      - ./ai-service/src:/app/src
+    command: fastapi dev src/main.py --host 0.0.0.0
