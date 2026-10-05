@@ -69,59 +69,91 @@ luxeai/
 │   ├── schemas/              # Zod validation schemas
 │   └── package.json
 │
-├── ai-service/               # Python FastAPI recommendation engine (planned)
-├── docker-compose.yml        # Orchestrates all services (planned)
-├── .env.example              # Environment variable template
+├── ai-service/               # Python FastAPI recommendation engine
+├── docker-compose.yml        # Orchestrates backend, frontend, AI service and MongoDB
+├── .env.example              # Optional compose-level variables (DOCKER_MONGODB_URI)
 └── README.md
 ```
  
 ## Getting Started
- 
+
 **Prerequisites**
-- Node.js v18+
-- Python 3.10+
-- MongoDB (local or Atlas)
-- Docker (recommended)
-**Option A — Run with Docker (Recommended)**
- 
+- [Docker](https://docs.docker.com/get-docker/) with Docker Compose (for Option A)
+- Node.js v22+ (for Option B)
+- [uv](https://docs.astral.sh/uv/) and Python 3.12+ (for Option B, AI service)
+
+### 1. Create your env files
+
+The real `.env` files are git-ignored, so each machine creates its own from the templates:
+
 ```bash
-git clone https://github.com/YOUR_USERNAME/luxeai.git
-cd luxeai
-cp .env.example .env
-docker-compose up --build
+cp server/.env.example server/.env
+cp client/.env.example client/.env
 ```
- 
+
+Then fill in the values you need in `server/.env` (`JWT_SECRET`, Stripe keys, ...). The defaults already point to a local MongoDB and the local services.
+
+### 2. Database
+
+By default the project uses a **local MongoDB** that runs in Docker (no Atlas account needed). It starts empty, so load the sample data (users, products and orders) once:
+
+```bash
+# With the whole stack running (Option A)
+docker compose exec backend npm run seed
+
+# Or without Docker for the backend (Option B)
+docker compose up -d mongo
+cd server && npm install && npm run seed
+```
+
+Sample logins: `admin@luxeai.com` or `alice@example.com`, password `Password123!`.
+`npm run seed` wipes users, products, carts and orders first, and refuses to run against a `mongodb+srv` (Atlas) URI unless you pass `--force`.
+
+To browse the data, open [MongoDB Compass](https://www.mongodb.com/products/tools/compass) and connect to `mongodb://localhost:27017` (database `luxeai`).
+
+**Using your own database (e.g. Atlas) instead**
+- Docker: create a `.env` in the project root with `DOCKER_MONGODB_URI=mongodb+srv://user:password@cluster.mongodb.net/your_db` (see `.env.example`).
+- Manual: set `MONGODB_URI` in `server/.env`.
+- URL-encode special characters in the password (`@` -> `%40`). After changing a `.env`, recreate the container: `docker compose up -d --force-recreate backend`.
+
+### Option A — Run with Docker (recommended)
+
+```bash
+docker compose up -d --build
+```
+
 | Service     | URL                   |
 |-------------|-----------------------|
-| Frontend    | http://localhost:3000 |
-| Backend API | http://localhost:5000 |
+| Frontend    | http://localhost:5173 |
+| Backend API | http://localhost:5001 |
 | AI Service  | http://localhost:8000 |
- 
-**Option B — Run Services Manually**
- 
-Backend:
+| MongoDB     | localhost:27017       |
+
+Inside Docker the backend reaches the AI service at `http://microservice:8000` and MongoDB at `mongo:27017`; compose sets both, so the `localhost` values in `server/.env` are only used for manual runs.
+
+### Option B — Run services manually
+
+Keep MongoDB in Docker (`docker compose up -d mongo`) or point `MONGODB_URI` to your own, then in three terminals:
+
 ```bash
-cd server
-npm install
-npm run dev
+# Backend (http://localhost:5001)
+cd server && npm install && npm run dev
+
+# Frontend (http://localhost:5173)
+cd client && npm install && npm run dev
+
+# AI service (http://localhost:8000)
+cd ai-service && uv sync && uv run fastapi dev
 ```
- 
-AI Service:
-```bash
-cd ai-service
-python -m venv venv
-source venv/bin/activate      # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
-```
- 
-Frontend:
-```bash
-cd client
-npm install
-npm run dev
-```
- 
+
+### Troubleshooting
+
+| Symptom | Cause / fix |
+|---------|-------------|
+| `bad auth : authentication failed` | Wrong or outdated DB password in `.env`; update it and recreate the backend container. |
+| Browser shows `ERR_CONNECTION_REFUSED` on `/api/products` | `VITE_API_URL` in `client/.env` doesn't match the backend (`http://localhost:5001`). Recreate the frontend container. |
+| Compass shows an empty `localhost:27017` | The seed hasn't been run, or the backend is using another database (`DOCKER_MONGODB_URI` is set). |
+
 ## API Overview
  
 **Auth — `/api/auth`**
