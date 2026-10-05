@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment / uv
+.venv
+.uv
+
+# Tests and tooling caches
+tests/
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov/
+
+# Environment variables (pass them at runtime instead)
+.env
+.env.*
+
+# Git / Docker
+.git
+.gitignore
+.dockerignore
+Dockerfile
+
+# Logs
+*.log
