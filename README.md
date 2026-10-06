@@ -100,13 +100,23 @@ By default the project uses a **local MongoDB** that runs in Docker (no Atlas ac
 ```bash
 # With the whole stack running (Option A)
 docker compose exec backend npm run seed
+docker compose restart backend
 
 # Or without Docker for the backend (Option B)
 docker compose up -d mongo
-cd server && npm install && npm run seed
+cd server && npm ci && npm run seed
 ```
 
-Sample logins: `admin@luxeai.com` or `alice@example.com`, password `Password123!`.
+The backend caches product responses in memory for 5 minutes, so restart it after seeding (Option B: stop and re-run `npm run dev`); otherwise the store can show an empty catalog until the cache expires.
+
+Sample logins:
+
+| Email                | Password         | Role  |
+|----------------------|------------------|-------|
+| `alisson@gmail.com`  | `Password123@`   | user  |
+| `barry@outlook.com`  | `Cotrasenia123!` | admin |
+| `carlos@hotmail.com` | `Fakepassy789!`  | user  |
+
 `npm run seed` wipes users, products, carts and orders first, and refuses to run against a `mongodb+srv` (Atlas) URI unless you pass `--force`.
 
 To browse the data, open [MongoDB Compass](https://www.mongodb.com/products/tools/compass) and connect to `mongodb://localhost:27017` (database `luxeai`).
@@ -137,10 +147,10 @@ Keep MongoDB in Docker (`docker compose up -d mongo`) or point `MONGODB_URI` to 
 
 ```bash
 # Backend (http://localhost:5001)
-cd server && npm install && npm run dev
+cd server && npm ci && npm run dev
 
 # Frontend (http://localhost:5173)
-cd client && npm install && npm run dev
+cd client && npm ci && npm run dev
 
 # AI service (http://localhost:8000)
 cd ai-service && uv sync && uv run fastapi dev
@@ -153,6 +163,8 @@ cd ai-service && uv sync && uv run fastapi dev
 | `bad auth : authentication failed` | Wrong or outdated DB password in `.env`; update it and recreate the backend container. |
 | Browser shows `ERR_CONNECTION_REFUSED` on `/api/products` | `VITE_API_URL` in `client/.env` doesn't match the backend (`http://localhost:5001`). Recreate the frontend container. |
 | Compass shows an empty `localhost:27017` | The seed hasn't been run, or the backend is using another database (`DOCKER_MONGODB_URI` is set). |
+| Store shows no products right after seeding | The backend served a cached empty list from before the seed. Restart it: `docker compose restart backend` (or re-run `npm run dev`). |
+| `docker compose up` fails with `port is already allocated` on 27017 | Another MongoDB is running on your machine (e.g. a Homebrew or Windows service). Stop it, or change the host port of the `mongo` service. |
 
 ## API Overview
  
