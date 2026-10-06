@@ -1,6 +1,7 @@
 services:
   backend:
     build: ./server
+    restart: on-failure
     ports:
       - '5001:5001'
     volumes:
