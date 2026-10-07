@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import toast from "react-hot-toast";
 
@@ -7,6 +7,7 @@ const Login = () => {
 
   const authContext = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,10 +34,12 @@ const Login = () => {
       setPassword('');
       setLoading(false);
       toast.success("Login successful!", { duration: 3000, position: "top-right" });
+      // Send the user back to the page they tried to open before being redirected here.
+      const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname;
       if (user?.role === 'admin') {
-        navigate('/admin-dashboard');
+        navigate(from?.startsWith('/admin-dashboard') ? from : '/admin-dashboard', { replace: true });
       } else {
-        navigate('/homepage');
+        navigate(from && !from.startsWith('/admin-dashboard') ? from : '/homepage', { replace: true });
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed');
