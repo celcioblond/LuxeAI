@@ -44,9 +44,9 @@ const Register = () => {
       setLoading(false);
       toast.success('Registered successfully!', { duration: 3000, position: 'top-right' });
       if (user?.role === 'admin') {
-        navigate('/admin-dashboard');
+        navigate('/admin-dashboard', { replace: true });
       } else {
-        navigate('/homepage');
+        navigate('/homepage', { replace: true });
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Registration failed');
