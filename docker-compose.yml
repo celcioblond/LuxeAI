@@ -36,9 +36,16 @@ services:
     ports:
       - '8000:8000'
     container_name: luxeai-microservice
+    env_file:
+      - ./ai-service/.env
+    environment:
+      MONGODB_URI: ${DOCKER_MONGODB_URI:-mongodb://mongo:27017/luxeai}
+    depends_on:
+      mongo:
+        condition: service_healthy
     volumes:
-      - ./ai-service/src:/app/src
-    command: fastapi dev src/main.py --host 0.0.0.0
+      - ./ai-service/app:/app/app
+    command: fastapi dev app/main.py --host 0.0.0.0
   mongo:
     image: mongo:8
     container_name: luxeai-mongo
