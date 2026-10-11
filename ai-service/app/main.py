@@ -1,5 +1,6 @@
 from app.core.config import settings
 from app.db.db import MongoDbDep, lifespan
+from app.repositories.user_purchases import get_user_purchaes
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo.errors import PyMongoError
@@ -30,6 +31,12 @@ async def read_products_count(db: MongoDbDep):
 
     print(f"products count: {products_count}")
     return {"products_count": products_count}
+
+
+@app.get("/user_purchases/{user_id}")
+async def read_user_purchases(user_id: str, db: MongoDbDep):
+    await get_user_purchaes(user_id, db)
+    return {"ok": True}
 
 
 if __name__ == "__main__":
