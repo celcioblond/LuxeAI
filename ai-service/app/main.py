@@ -1,5 +1,6 @@
 from app.core.config import settings
 from app.db.db import MongoDbDep, lifespan
+from app.repositories.catalog import get_catalog
 from app.repositories.user_purchases import get_user_purchaes
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,22 +22,16 @@ async def root():
     return {"Service": "Recommendation system"}
 
 
-@app.get("/products_count")
-async def read_products_count(db: MongoDbDep):
-    products_collection = db["products"]
-    try:
-        products_count = await products_collection.count_documents({})
-    except PyMongoError as e:
-        raise HTTPException(status_code=500, detail="Could not count products") from e
-
-    print(f"products count: {products_count}")
-    return {"products_count": products_count}
-
-
 @app.get("/user_purchases/{user_id}")
 async def read_user_purchases(user_id: str, db: MongoDbDep):
-    await get_user_purchaes(user_id, db)
-    return {"ok": True}
+    result = await get_user_purchaes(user_id, db)
+    return {"user_purchases": result}
+
+
+@app.get("/catalog")
+async def read_catalog(db: MongoDbDep):
+    result = await get_catalog(db)
+    return {"catalog": result}
 
 
 if __name__ == "__main__":
