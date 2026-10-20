@@ -1,10 +1,7 @@
 from app.core.config import settings
-from app.db.db import MongoDbDep, lifespan
-from app.repositories.catalog import get_catalog
-from app.repositories.user_purchases import get_user_purchaes
-from fastapi import FastAPI, HTTPException
+from app.db.db import lifespan
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pymongo.errors import PyMongoError
 
 app = FastAPI(lifespan=lifespan)
 
@@ -20,18 +17,6 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {"Service": "Recommendation system"}
-
-
-@app.get("/user_purchases/{user_id}")
-async def read_user_purchases(user_id: str, db: MongoDbDep):
-    result = await get_user_purchaes(user_id, db)
-    return {"user_purchases": result}
-
-
-@app.get("/catalog")
-async def read_catalog(db: MongoDbDep):
-    result = await get_catalog(db)
-    return {"catalog": result}
 
 
 if __name__ == "__main__":
