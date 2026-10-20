@@ -1,6 +1,8 @@
 from typing import Annotated
 
 from app.db.client import get_client
+from app.repositories.catalog import get_catalog
+from app.services.recommender import build_index
 from fastapi import Depends, FastAPI, Request
 from pymongo.asynchronous.database import AsyncDatabase
 
@@ -9,6 +11,8 @@ async def lifespan(app: FastAPI):
     client = get_client()
     app.state.mongo_client = client
     app.state.mongo_db = client.get_default_database()
+    catalog = await get_catalog(app.state.mongo_db)
+    app.state.index = build_index(catalog)
 
     yield
 
