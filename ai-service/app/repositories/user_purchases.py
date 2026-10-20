@@ -9,10 +9,10 @@ from pymongo.errors import PyMongoError
 
 
 # Returns what the user bought and how much in all his/her orders
-async def get_user_purchases(userId: str, db: AsyncDatabase) -> dict[str, int]:
+async def get_user_purchases(user_id: str, db: AsyncDatabase) -> dict[str, int]:
     orders: AsyncCollection = db["orders"]
 
-    user_orders = await orders.find({"customer.userId": ObjectId(userId)}).to_list()
+    user_orders = await orders.find({"customer.userId": ObjectId(user_id)}).to_list()
 
     user_product_and_quantity = Counter()
 
