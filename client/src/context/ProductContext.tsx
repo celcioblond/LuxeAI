@@ -24,6 +24,7 @@ type ProductContextType = {
   error: string;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const ProductContext = createContext<ProductContextType | null>(null);
 
 export const ProductProvider = ({
@@ -42,9 +43,10 @@ export const ProductProvider = ({
       setLoadingProducts(true);
       const data = await fetchProducts();
       setProducts(data.products);
-      setLoadingProducts(false);
-    } catch (error) {
+    } catch {
       setError('Failed to fetch products');
+    } finally {
+      setLoadingProducts(false);
     }
   }, []);
 
@@ -53,7 +55,7 @@ export const ProductProvider = ({
       setLoadingProduct(true);
       const fetchedProduct = await fetchProduct(id);
       setProduct(fetchedProduct.product);
-    } catch (error) {
+    } catch {
       setError('Failed to fetch product');
     } finally {
       setLoadingProduct(false); // always runs
