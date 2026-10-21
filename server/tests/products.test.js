@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
 import app from '../app.js';
+import Cart from '../models/cartModel.js';
 import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
 import cache from '../utils/cache.js';
@@ -19,6 +20,7 @@ afterAll(async () => {
 afterEach(async () => {
   await Product.deleteMany({});
   await User.deleteMany({});
+  await Cart.deleteMany({});
   cache.flushAll();
 });
 
@@ -243,6 +245,47 @@ describe('DELETE /api/products/:id', () => {
     const response = await request(app).delete(`/api/products/${product._id}`);
 
     expect(response.statusCode).toBe(401);
+  });
+});
+
+describe('DELETE /api/products/:id - carts', () => {
+  test('should remove the deleted product from carts and keep the cart usable', async () => {
+    // The first registered user is the admin
+    const register = await request(app).post('/api/auth/register').send({
+      name: 'Admin User',
+      email: 'cartadmin@outlook.com',
+      password: 'Password1!',
+    });
+    const { token } = register.body;
+    const userId = register.body.user.id;
+
+    const product = await Product.create({
+      name: 'Luxury Watch',
+      price: 299.99,
+      description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
+      stock: 10,
+      imageUrl: 'https://example.com/watch.jpg',
+    });
+
+    await request(app)
+      .post('/api/cart/addToCart')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ userId, productId: product._id, quantity: 1 });
+
+    const deleteResponse = await request(app)
+      .delete(`/api/products/${product._id}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(deleteResponse.statusCode).toBe(200);
+
+    const cart = await Cart.findOne({ userId });
+    expect(cart.products).toHaveLength(0);
+
+    const response = await request(app)
+      .get(`/api/cart/getCart/${userId}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.cart.products).toHaveLength(0);
   });
 });
 
