@@ -61,7 +61,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(true);
       const userId = getUserId();
       const response = await getCartService(userId);
-      setCart(response);
+      // Skip items whose product was deleted (populate leaves them null)
+      setCart({
+        ...response,
+        products: response.products.filter((item) => item.productId),
+      });
     } catch (error) {
       console.error((error as Error).message);
     } finally {
