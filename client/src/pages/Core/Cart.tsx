@@ -4,6 +4,9 @@ import MainNavigation from '../../components/Navbar/MainNavigation';
 import { FaShoppingCart, FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
+const errorMessage = (error: unknown, fallback: string) =>
+  error instanceof Error ? error.message : fallback;
+
 const Cart = () => {
   const {
     cart,
@@ -19,13 +22,21 @@ const Cart = () => {
   const navigate = useNavigate();
 
   const handleRemove = async (productId: string, name: string) => {
-    await removeProductFromCart(productId);
-    toast.success(`${name} removed from cart`);
+    try {
+      await removeProductFromCart(productId);
+      toast.success(`${name} removed from cart`);
+    } catch (error) {
+      toast.error(errorMessage(error, 'Failed to remove product'));
+    }
   };
 
   const handleClearCart = async () => {
-    await clearCart();
-    toast.success('Cart cleared');
+    try {
+      await clearCart();
+      toast.success('Cart cleared');
+    } catch (error) {
+      toast.error(errorMessage(error, 'Failed to clear cart'));
+    }
   };
 
   const handleDecrement = async (
@@ -33,11 +44,15 @@ const Cart = () => {
     currentQty: number,
     name: string,
   ) => {
-    if (currentQty === 1) {
-      await removeProductFromCart(productId);
-      toast.success(`${name} removed from cart`);
-    } else {
-      await updateQuantity(productId, currentQty - 1);
+    try {
+      if (currentQty === 1) {
+        await removeProductFromCart(productId);
+        toast.success(`${name} removed from cart`);
+      } else {
+        await updateQuantity(productId, currentQty - 1);
+      }
+    } catch (error) {
+      toast.error(errorMessage(error, 'Failed to update quantity'));
     }
   };
 
@@ -50,7 +65,11 @@ const Cart = () => {
       toast.error(`Only ${stock} in stock`);
       return;
     }
-    await updateQuantity(productId, currentQty + 1);
+    try {
+      await updateQuantity(productId, currentQty + 1);
+    } catch (error) {
+      toast.error(errorMessage(error, 'Failed to update quantity'));
+    }
   };
 
   return (
