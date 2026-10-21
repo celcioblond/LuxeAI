@@ -1,5 +1,5 @@
-import { isAxiosError } from 'axios';
 import api from './api';
+import { toMessage } from './errors';
 
 interface ShippingAddress {
   street: string;
@@ -58,13 +58,6 @@ interface CreateOrderResponse {
   clientSecret: string;
 }
 
-// Prefer the server's own message (e.g. "Only 3 available") over axios' generic one
-const toMessage = (error: unknown) => {
-  if (isAxiosError(error)) {
-    return error.response?.data?.message ?? error.message;
-  }
-  return error instanceof Error ? error.message : String(error);
-};
 
 export const createOrderService = async (payload: CreateOrderPayload): Promise<CreateOrderResponse> => {
   try {
