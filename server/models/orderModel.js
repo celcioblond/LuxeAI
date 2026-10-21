@@ -61,6 +61,9 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// getMyOrders and the recommender both query by customer.userId
+orderSchema.index({ 'customer.userId': 1, createdAt: -1 });
+
 const Order = mongoose.model('Order', orderSchema);
 
 export default Order;
