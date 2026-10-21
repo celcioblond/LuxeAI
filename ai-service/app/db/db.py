@@ -11,6 +11,10 @@ async def lifespan(app: FastAPI):
     client = get_client()
     app.state.mongo_client = client
     app.state.mongo_db = client.get_default_database()
+    # Idempotent: one saved-recommendations document per user
+    await app.state.mongo_db["saved_recommendations"].create_index(
+        "userId", unique=True
+    )
     catalog = await get_catalog(app.state.mongo_db)
     app.state.index = build_index(catalog)
 
