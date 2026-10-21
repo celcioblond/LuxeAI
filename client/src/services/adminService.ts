@@ -1,5 +1,6 @@
-import type { AxiosResponse } from 'axios';
+import { isAxiosError, type AxiosResponse } from 'axios';
 import api from './api';
+import { toMessage } from './errors';
 
 interface DashboardStats {
   userCount: number;
@@ -61,6 +62,9 @@ interface UpdateProductPayload {
 
 interface UsersResponse {
   users: User[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 interface UpdateUserResponse {
@@ -84,18 +88,18 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
     const response: AxiosResponse<DashboardStats> =
       await api.get('/api/admin/stats');
     return response.data;
-  } catch (error: any) {
-    throw new Error(`Error: ${error.message}`);
+  } catch (error) {
+    throw new Error(toMessage(error));
   }
 };
 
-export const getAllUsers = async (): Promise<User[]> => {
+export const getAllUsers = async (page = 1): Promise<UsersResponse> => {
   try {
     const response: AxiosResponse<UsersResponse> =
-      await api.get('/api/admin/users');
-    return response.data.users;
-  } catch (error: any) {
-    throw new Error(`Error: ${error.message}`);
+      await api.get('/api/admin/users', { params: { page } });
+    return response.data;
+  } catch (error) {
+    throw new Error(toMessage(error));
   }
 };
 
@@ -109,8 +113,8 @@ export const updateUser = async (
       payload,
     );
     return response.data.user;
-  } catch (error: any) {
-    throw new Error(`Error: ${error.message}`);
+  } catch (error) {
+    throw new Error(toMessage(error));
   }
 };
 
@@ -120,8 +124,8 @@ export const deleteUser = async (id: string): Promise<string> => {
       `/api/admin/users/${id}`,
     );
     return response.data.message;
-  } catch (error: any) {
-    throw new Error(`Error: ${error.message}`);
+  } catch (error) {
+    throw new Error(toMessage(error));
   }
 };
 
@@ -134,12 +138,13 @@ export const addProduct = async (
       productPayload,
     );
     return response.data.product;
-  } catch (error: any) {
-    const zodErrors = error.response?.data;
+  } catch (error) {
+    // Product validation errors come back as an array of { message }
+    const zodErrors = isAxiosError(error) ? error.response?.data : null;
     if (Array.isArray(zodErrors)) {
       throw new Error(zodErrors.map((e: { message: string }) => e.message).join(', '));
     }
-    throw new Error(error.response?.data?.message || error.message);
+    throw new Error(toMessage(error));
   }
 };
 
@@ -153,12 +158,13 @@ export const updateProduct = async (
       productPayload,
     );
     return response.data.product;
-  } catch (error: any) {
-    const zodErrors = error.response?.data;
+  } catch (error) {
+    // Product validation errors come back as an array of { message }
+    const zodErrors = isAxiosError(error) ? error.response?.data : null;
     if (Array.isArray(zodErrors)) {
       throw new Error(zodErrors.map((e: { message: string }) => e.message).join(', '));
     }
-    throw new Error(error.response?.data?.message || error.message);
+    throw new Error(toMessage(error));
   }
 };
 
@@ -168,7 +174,7 @@ export const deleteProduct = async (id: string): Promise<string> => {
       `/api/products/${id}`,
     );
     return response.data.message;
-  } catch (error: any) {
-    throw new Error(`Error: ${error.message}`);
+  } catch (error) {
+    throw new Error(toMessage(error));
   }
 };
