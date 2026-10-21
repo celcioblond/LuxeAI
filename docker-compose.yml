@@ -9,6 +9,9 @@ services:
       - /backend/node_modules
     env_file:
       - ./server/.env
+    # Reload on code changes (the source is mounted). -L polls, which is what
+    # works reliably for files mounted from the macOS host.
+    command: npx nodemon -L server.js
     environment:
       AI_SERVICE_URL: http://microservice:8000
       MONGODB_URI: ${DOCKER_MONGODB_URI:-mongodb://mongo:27017/luxeai}
