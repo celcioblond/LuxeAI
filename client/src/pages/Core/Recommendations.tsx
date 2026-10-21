@@ -16,11 +16,15 @@ interface Product {
 const Recommendations = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     getRecommendations()
       .then(setProducts)
-      .catch((error) => console.error("Failed to load recommendations", error))
+      .catch((error) => {
+        console.error("Failed to load recommendations", error);
+        setFailed(true);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -34,6 +38,11 @@ const Recommendations = () => {
         {loading ? (
           <div className="flex flex-col items-center rounded-2xl bg-white p-8 shadow-2xl">
             <p className="text-gray-400">Loading recommendations...</p>
+          </div>
+        ) : failed ? (
+          // Without this, a down AI service looked like "you have no purchases"
+          <div className="flex flex-col items-center rounded-2xl bg-white p-8 shadow-2xl">
+            <p className="text-gray-500 text-lg">We couldn't load your recommendations right now. Please try again later.</p>
           </div>
         ) : products.length === 0 ? (
           <div className="flex flex-col items-center space-y-4 rounded-2xl bg-white p-8 shadow-2xl">
