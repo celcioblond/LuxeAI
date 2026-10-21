@@ -69,7 +69,7 @@ def recommend(index: CatalogIndex, purchases: dict[str, int], limit: int) -> lis
         if product_id in purchases:
             continue
 
-        if index.products_by_id[product_id]["stock"] == 0:
+        if index.products_by_id[product_id]["stock"] <= 0:
             continue
 
         recommended.append(product_id)
