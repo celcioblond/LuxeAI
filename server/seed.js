@@ -72,6 +72,8 @@ const seedDb = async () => {
       Product.deleteMany({}),
       Order.deleteMany({}),
       Cart.deleteMany({}),
+      // Owned by the AI service; would point to the old product ids otherwise
+      mongoose.connection.collection('saved_recommendations').deleteMany({}),
     ]);
     console.log('Deleted old data.');
 
