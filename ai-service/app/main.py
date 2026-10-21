@@ -1,3 +1,4 @@
+from app.api.recommendation_routes import router as recommendation_router
 from app.core.config import settings
 from app.db.db import lifespan
 from fastapi import FastAPI
@@ -12,6 +13,9 @@ app.add_middleware(
     allow_headers=["*"],
     allow_methods=["*"],
 )
+
+
+app.include_router(recommendation_router)
 
 
 @app.get("/")
