@@ -46,6 +46,16 @@ afterEach(async () => {
 });
 
 describe('GET /api/admin/stats', () => {
+  test('should return 403 when the admin was demoted after the token was issued', async () => {
+    await User.updateOne({ email: 'admin@outlook.com' }, { role: 'user' });
+
+    const response = await request(app)
+      .get('/api/admin/stats')
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(response.statusCode).toBe(403);
+  });
+
   test('should return 200 with userCount, productCount and orderCount when admin', async () => {
     const response = await request(app)
       .get('/api/admin/stats')
