@@ -129,15 +129,30 @@ cd server && npm ci && npm run seed
 
 The seed also tells the AI service to rebuild its index, so recommendations work right away. The backend caches product responses in memory for 5 minutes, so restart it after seeding (Option B: stop and re-run `npm run dev`); otherwise the store can show an empty catalog until the cache expires.
 
+#### What the seed loads
+
+The data is the same on every machine and every run, so everyone who clones the repo gets identical users, products and orders.
+
+- **48 products** in 8 categories (Accessories, Shoes, Clothing, Bags, Fitness, Skincare, Tech, Kitchen), 3 of them out of stock.
+- **25 users**: 1 admin and 24 shoppers. Each shopper has a favourite category and most of their orders come from it, so their recommendations are easy to tell apart.
+- **38 orders** from the last 90 days in every status (`delivered`, `shipped`, `processing`, `paid`, `pending`, `cancelled`). `pending` and `cancelled` orders don't count as purchases for recommendations.
+- **5 carts**, one of them asking for every unit left of a product, to try the stock checks.
+- The `saved_recommendations` collection, empty: it fills up the first time each user opens "Recommended for you".
+
+There are more than 20 users and orders, so the admin pages show their pagination.
+
 #### Sample users
 
-| Email                | Password         | Role  | Has orders |
-|----------------------|------------------|-------|------------|
-| `alisson@gmail.com`  | `Password123@`   | user  | yes        |
-| `barry@outlook.com`  | `Cotrasenia123!` | admin | no         |
-| `carlos@hotmail.com` | `Fakepassy789!`  | user  | yes        |
+| Email                        | Password         | Role  | Buys mostly | Notes                                      |
+|------------------------------|------------------|-------|-------------|--------------------------------------------|
+| `alisson@gmail.com`          | `Password123@`   | user  | Skincare    | 3 delivered orders                         |
+| `carlos@hotmail.com`         | `Fakepassy789!`  | user  | Tech        | 3 delivered orders, items in the cart      |
+| `barry@outlook.com`          | `Cotrasenia123!` | admin | —           | Admin panel; no orders                     |
+| `emma.wilson@example.com`    | `Shopper123!`    | user  | Fitness     | Cart holds all the stock of one product    |
+| `mason.anderson@example.com` | `Shopper123!`    | user  | Kitchen     |                                            |
+| `grace.scott@example.com`    | `Shopper123!`    | user  | —           | No orders: empty recommendations           |
 
-Log in as Alison or Carlos to see recommendations right away; they come from the seeded orders. The admin has no orders, so its recommendation list is empty.
+All the other `@example.com` users also use `Shopper123!`; the full list is in `server/data/userData.js`.
 
 `npm run seed` wipes users, products, carts, orders and saved recommendations first, and refuses to run against a `mongodb+srv` (Atlas) URI unless you pass `--force`.
 
