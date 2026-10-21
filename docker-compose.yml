@@ -33,8 +33,10 @@ services:
       - backend
   microservice:
     build: ./ai-service
+    # Bound to localhost only: the service has no auth, the backend reaches it
+    # through the compose network (http://microservice:8000)
     ports:
-      - '8000:8000'
+      - '127.0.0.1:8000:8000'
     container_name: luxeai-microservice
     env_file:
       - ./ai-service/.env
