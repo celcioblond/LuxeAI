@@ -108,6 +108,53 @@ describe('POST /api/orders', () => {
     expect(response.statusCode).toBe(400);
   });
 
+  test('should return 400 when the cart quantity exceeds the current stock', async () => {
+    const product = await Product.create({
+      name: 'Luxury Watch',
+      price: 299.99,
+      description: 'A premium timepiece for the discerning buyer',
+      category: 'Accessories',
+      stock: 5,
+      imageUrl: 'https://example.com/watch.jpg',
+    });
+
+    await request(app)
+      .post('/api/cart/addToCart')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ userId, productId: product._id, quantity: 3 });
+
+    // Stock drops after the item was added to the cart
+    await Product.findByIdAndUpdate(product._id, { stock: 1 });
+
+    const response = await request(app)
+      .post('/api/orders')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        firstName: 'Ryan',
+        lastName: 'Ray',
+        shippingAddress: {
+          street: '123 Main St',
+          city: 'New York',
+          state: 'NY',
+          zip: '10001',
+          country: 'US',
+        },
+      });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toMatch(/Only 1/);
+    expect(await Order.countDocuments()).toBe(0);
+  });
+
+  test('should return 400 (not 500) when the body is invalid', async () => {
+    const response = await request(app)
+      .post('/api/orders')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ firstName: 'Ryan' });
+
+    expect(response.statusCode).toBe(400);
+  });
+
   test('should return 401 when no token is provided', async () => {
     const response = await request(app)
       .post('/api/orders')
