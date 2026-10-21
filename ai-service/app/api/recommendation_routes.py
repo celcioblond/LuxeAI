@@ -10,6 +10,8 @@ from app.services.recommender import build_index, recommend
 from bson.errors import InvalidId
 from fastapi import APIRouter, HTTPException, Query, Request
 
+MAX_SAVED_RECOMMENDATIONS = 12
+
 router = APIRouter(
     prefix="/recommendations",
 )
@@ -42,7 +44,8 @@ async def get_recommendations(
         for product_id in recommend(index, purchases, limit)
         if product_id not in kept_ids
     ]
-    recommended_ids = kept_ids + new_ids
+    # Cap the list so it can't grow forever; the oldest recommendations go first
+    recommended_ids = (kept_ids + new_ids)[-MAX_SAVED_RECOMMENDATIONS:]
 
     if recommended_ids != saved_ids:
         await save_recommendations(user_id, recommended_ids, db)
