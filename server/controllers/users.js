@@ -5,6 +5,8 @@ import HttpError from '../models/http-error.js';
 import bcrypt from "bcrypt";
 import { loginSchema, registerSchema } from '../schemas/userSchema.js';
 
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
+
 export const register = async (req, res, next) => {
   try {
     const {name, email, password} = registerSchema.parse(req.body);
@@ -27,7 +29,7 @@ export const register = async (req, res, next) => {
 
     const result = await user.save();
     const token = jwt.sign({userId: user._id.toString(), email: user.email, role: user.role}, process.env.JWT_SECRET, {
-      expiresIn: "24h"
+      expiresIn: JWT_EXPIRES_IN
     });
 
     res.status(201).json({
@@ -68,7 +70,7 @@ export const login = async (req, res, next) => {
       email: user.email,
       role: user.role
     }, process.env.JWT_SECRET, {
-      expiresIn: "24h",
+      expiresIn: JWT_EXPIRES_IN,
     });
 
     res.status(200).json({
