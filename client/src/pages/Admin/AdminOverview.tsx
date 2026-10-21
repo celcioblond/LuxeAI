@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { getDashboardStats } from '../../services/adminService';
 
@@ -16,6 +17,7 @@ const AdminOverview = () => {
   useEffect(() => {
     getDashboardStats()
       .then(setStats)
+      .catch(() => toast.error('Failed to load stats'))
       .finally(() => setLoading(false));
   }, []);
 
