@@ -10,6 +10,10 @@ export const getCart = async(req, res, next) => {
     }
     const cart = await Cart.findOne({ userId }).populate('products.productId', 'name price imageUrl stock');
 
+    if (cart) {
+      cart.products = cart.products.filter((item) => item.productId);
+    }
+
     res.status(200).json({ cart: cart ?? { userId, products: [] } });
   } catch(error) {
     return next(new HttpError(`Failed to fetch cart: ${error.message}`, 500));
@@ -39,6 +43,7 @@ export const addToCart = async (req, res, next) => {
     const cart = await Cart.findOne({ userId }).populate('products.productId', 'name price imageUrl stock');
 
     if (cart) {
+      cart.products = cart.products.filter((p) => p.productId);
       const existingProduct = cart.products.find(
         (p) => p.productId._id.toString() === productId.toString()
       );
@@ -150,6 +155,7 @@ export const getCartTotal = async(req, res, next) => {
     }
 
     const cartTotal = cart.products.reduce((total, p) => {
+      if (!p.productId) return total;
       return total + (p.productId.price*p.quantity);
     }, 0);
 
