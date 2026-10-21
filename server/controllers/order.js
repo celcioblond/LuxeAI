@@ -4,6 +4,8 @@ import HttpError from '../models/http-error.js';
 import Order from '../models/orderModel.js';
 import Cart from '../models/cartModel.js';
 import Product from '../models/productModel.js';
+import cache from '../utils/cache.js';
+import { syncRecommendations } from '../utils/syncRecommendations.js';
 import { createOrderSchema, updateOrderStatusSchema } from '../schemas/orderSchema.js';
 
 let stripeClient = null;
@@ -25,6 +27,12 @@ const decrementStock = async (order) => {
       ),
     ),
   );
+
+  // Stock changed: drop the cached catalog and refresh the recommender's index,
+  // otherwise both keep serving the old stock (e.g. recommending a sold-out item).
+  cache.del('products:all');
+  order.products.forEach((p) => cache.del(`products:${p.productId}`));
+  syncRecommendations();
 };
 
 export const createOrder = async (req, res, next) => {
@@ -215,6 +223,9 @@ export const updateOrderStatus = async (req, res, next) => {
 
     res.status(200).json({ order });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return next(new HttpError(error.issues[0].message, 400));
+    }
     return next(new HttpError('Failed to update order status', 500));
   }
 };
