@@ -26,5 +26,8 @@ const cartSchema = new mongoose.Schema(
   {timestamps: true}
 )
 
+// One cart per user; also makes the userId lookups indexed
+cartSchema.index({ userId: 1 }, { unique: true });
+
 const Cart = mongoose.model("Cart", cartSchema);
 export default Cart;
