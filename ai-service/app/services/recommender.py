@@ -23,7 +23,7 @@ def build_index(products: list[dict]) -> CatalogIndex:
 
     id_to_row = {product["_id"]: i for i, product in enumerate(products)}
 
-    products_by_id = {product["_id"]: product for product in products}
+    products_by_id: dict = {product["_id"]: product for product in products}
 
     texts = [
         f"{product['name']} {product['description']} {product['category']} {product['category']}"
