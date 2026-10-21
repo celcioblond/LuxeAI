@@ -37,5 +37,12 @@ def test_respects_limits_and_skips():
 
 
 def test_empty_cases():
-    assert recommend(build_index([]), {"1", 1}, 3) == []
+    assert recommend(build_index([]), {"1": 1}, 3) == []
     assert recommend(build_index(PRODUCTS), {}, 3) == []
+
+
+def test_skips_products_with_zero_or_negative_stock():
+    products = [dict(p) for p in PRODUCTS]
+    products[1]["stock"] = -2
+    index = build_index(products)
+    assert "2" not in recommend(index, {"1": 1}, 3)
