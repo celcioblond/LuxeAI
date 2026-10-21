@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import HttpError from "../models/http-error.js";
+import User from "../models/userModel.js";
 
 export const protect = async (req, res, next) => {
   try {
@@ -19,10 +20,17 @@ export const protect = async (req, res, next) => {
   }
 }
 
-export const isAdmin = (req, res, next) => {
-  const role = req.user.role;
-  if (role !== "admin") {
+// Reads the role from the database, not the token: a token keeps the role it
+// was issued with, so a demoted (or deleted) admin would otherwise keep access
+// until it expires.
+export const isAdmin = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.userId).select("role");
+    if (user?.role !== "admin") {
+      return next(new HttpError("Admins only", 403));
+    }
+    next();
+  } catch (error) {
     return next(new HttpError("Admins only", 403));
   }
-  next();
 }
