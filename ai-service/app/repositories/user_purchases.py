@@ -7,12 +7,20 @@ from pymongo.asynchronous.collection import AsyncCollection
 from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.errors import PyMongoError
 
+PAID_STATUSES = ["paid", "processing", "shipped", "delivered"]
+
 
 # Returns what the user bought and how much in all his/her orders
 async def get_user_purchases(user_id: str, db: AsyncDatabase) -> dict[str, int]:
     orders: AsyncCollection = db["orders"]
 
-    user_orders = await orders.find({"customer.userId": ObjectId(user_id)}).to_list()
+    # Only orders that were actually paid count as purchases
+    user_orders = await orders.find(
+        {
+            "customer.userId": ObjectId(user_id),
+            "status": {"$in": PAID_STATUSES},
+        }
+    ).to_list()
 
     user_product_and_quantity = Counter()
 
