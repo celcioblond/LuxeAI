@@ -32,13 +32,20 @@ const AdminUsers = () => {
   const [editForm, setEditForm] = useState<EditForm>({ name: '', email: '', role: 'user' });
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [limit, setLimit] = useState(20);
 
   useEffect(() => {
-    getAllUsers()
-      .then(setUsers)
+    getAllUsers(page)
+      .then((data) => {
+        setUsers(data.users);
+        setTotal(data.total);
+        setLimit(data.limit);
+      })
       .catch(() => toast.error('Failed to load users'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [page]);
 
   const openEdit = (user: User) => {
     setEditingUser(user);
@@ -68,6 +75,7 @@ const AdminUsers = () => {
     try {
       await deleteUser(id);
       setUsers(prev => prev.filter(u => u._id !== id));
+      setTotal(t => t - 1);
       toast.success('User deleted');
     } catch {
       toast.error('Failed to delete user');
@@ -130,6 +138,29 @@ const AdminUsers = () => {
               ))}
             </tbody>
           </table>
+        )}
+
+        {!loading && total > 0 && (
+          <div className="flex items-center justify-between pt-4 text-sm text-gray-500">
+            <span>{total} user{total !== 1 ? 's' : ''} total</span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setPage((p) => p - 1)}
+                disabled={page === 1}
+                className="px-3 py-1.5 text-xs font-bold bg-black text-white rounded-2xl hover:bg-amber-300 hover:text-black transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                ← Prev
+              </button>
+              <span>Page {page} of {Math.ceil(total / limit)}</span>
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page >= Math.ceil(total / limit)}
+                className="px-3 py-1.5 text-xs font-bold bg-black text-white rounded-2xl hover:bg-amber-300 hover:text-black transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Next →
+              </button>
+            </div>
+          </div>
         )}
       </div>
 
