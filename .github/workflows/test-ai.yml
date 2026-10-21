@@ -1,0 +1,29 @@
+name: Test AI Service
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'ai-service/**'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ai-service
+    env:
+      MONGODB_URI: mongodb://localhost:27017/test
+      ALLOWED_ORIGINS: '["http://localhost"]'
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: ai-service/uv.lock
+      - name: Install dependencies
+        run: uv sync --frozen
+      - name: Run tests
+        run: uv run pytest -v
