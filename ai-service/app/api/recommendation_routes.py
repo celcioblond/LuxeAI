@@ -1,5 +1,9 @@
 from app.db.db import MongoDbDep
 from app.repositories.catalog import get_catalog
+from app.repositories.saved_recommendations import (
+    get_saved_recommendations,
+    save_recommendations,
+)
 from app.repositories.user_purchases import get_user_purchases
 from app.schemas.serialize_products import individual_serial_to_front
 from app.services.recommender import build_index, recommend
@@ -24,7 +28,24 @@ async def get_recommendations(
         return {"recommendations": []}
 
     index = request.app.state.index
-    recommended_ids = recommend(index, purchases, limit)
+    saved_ids = await get_saved_recommendations(user_id, db)
+
+    kept_ids = [
+        product_id
+        for product_id in saved_ids
+        if product_id in index.products_by_id
+        and product_id not in purchases
+        and index.products_by_id[product_id]["stock"] > 0
+    ]
+    new_ids = [
+        product_id
+        for product_id in recommend(index, purchases, limit)
+        if product_id not in kept_ids
+    ]
+    recommended_ids = kept_ids + new_ids
+
+    if recommended_ids != saved_ids:
+        await save_recommendations(user_id, recommended_ids, db)
 
     return {
         "recommendations": [
