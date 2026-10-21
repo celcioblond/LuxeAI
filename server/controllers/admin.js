@@ -1,4 +1,7 @@
+import mongoose from 'mongoose';
+import { ZodError } from 'zod';
 import HttpError from '../models/http-error.js';
+import Cart from '../models/cartModel.js';
 import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
@@ -51,6 +54,9 @@ export const updateUser = async (req, res, next) => {
 
     res.status(200).json({ user });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return next(new HttpError(error.issues[0].message, 400));
+    }
     return next(new HttpError(`Failed to update user: ${error.message}`, 500));
   }
 };
@@ -63,6 +69,15 @@ export const deleteUser = async (req, res, next) => {
     if (!user) {
       return next(new HttpError('User not found', 404));
     }
+
+    // Remove what only makes sense while the user exists. Orders are kept on
+    // purpose: they are financial records.
+    await Promise.all([
+      Cart.deleteOne({ userId: id }),
+      mongoose.connection
+        .collection('saved_recommendations')
+        .deleteOne({ userId: id }),
+    ]);
 
     res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
