@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { ZodError } from 'zod';
 import HttpError from '../models/http-error.js';
 import Order from '../models/orderModel.js';
 import Cart from '../models/cartModel.js';
@@ -17,7 +18,11 @@ const getStripe = () => {
 const decrementStock = async (order) => {
   await Promise.all(
     order.products.map((p) =>
-      Product.findByIdAndUpdate(p.productId, { $inc: { stock: -p.quantity } }),
+      // The stock >= quantity guard keeps stock from ever going negative
+      Product.findOneAndUpdate(
+        { _id: p.productId, stock: { $gte: p.quantity } },
+        { $inc: { stock: -p.quantity } },
+      ),
     ),
   );
 };
@@ -28,11 +33,30 @@ export const createOrder = async (req, res, next) => {
     const { userId, email } = req.user;
 
     const cart = await Cart.findOne({ userId }).populate('products.productId', 'name price imageUrl stock');
-    if (!cart || cart.products.length === 0) {
+    if (!cart) {
       return next(new HttpError('Cart is empty', 400));
     }
 
-    const products = cart.products.map((item) => ({
+    // Products deleted after being added to the cart populate to null
+    const cartItems = cart.products.filter((item) => item.productId);
+    if (cartItems.length === 0) {
+      return next(new HttpError('Cart is empty', 400));
+    }
+
+    // Stock is only checked when adding to the cart, which may have been long ago
+    const unavailable = cartItems.find(
+      (item) => item.quantity > item.productId.stock,
+    );
+    if (unavailable) {
+      return next(
+        new HttpError(
+          `Only ${unavailable.productId.stock} of ${unavailable.productId.name} available`,
+          400,
+        ),
+      );
+    }
+
+    const products = cartItems.map((item) => ({
       productId: item.productId._id,
       name: item.productId.name,
       price: item.productId.price,
@@ -71,6 +95,9 @@ export const createOrder = async (req, res, next) => {
       clientSecret: paymentIntent.client_secret,
     });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return next(new HttpError(error.issues[0].message, 400));
+    }
     console.error('createOrder failed:', error.message);
     return next(new HttpError('Failed to create order', 500));
   }
