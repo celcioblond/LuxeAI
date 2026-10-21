@@ -21,9 +21,9 @@ const OrderConfirmation = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
 
-  const fetchOrder = useCallback((isRefresh = false) => {
+  // Only sets state in promise callbacks, so it is safe to call from an effect
+  const fetchOrder = useCallback(() => {
     if (!id) return;
-    if (isRefresh) setRefreshing(true);
     getOrderByIdService(id)
       .then(setOrder)
       .catch(() => {
@@ -40,7 +40,10 @@ const OrderConfirmation = () => {
     fetchOrder();
   }, [fetchOrder]);
 
-  const handleRefresh = () => fetchOrder(true);
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchOrder();
+  };
 
   if (loading) {
     return (
