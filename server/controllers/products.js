@@ -68,7 +68,15 @@ export const updateProduct = async (req, res, next) => {
       product,
     });
   } catch (error) {
-    return next(new HttpError('Updating product failed', 400));
+    if (error instanceof ZodError) {
+      return res
+        .status(400)
+        .json(error.issues.map((issue) => ({ message: issue.message })));
+    }
+    if (error.name === 'CastError' || error.name === 'ValidationError') {
+      return next(new HttpError('Updating product failed', 400));
+    }
+    return next(new HttpError('Updating product failed', 500));
   }
 };
 
