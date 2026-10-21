@@ -71,6 +71,7 @@ export const createOrder = async (req, res, next) => {
       clientSecret: paymentIntent.client_secret,
     });
   } catch (error) {
+    console.error('createOrder failed:', error.message);
     return next(new HttpError('Failed to create order', 500));
   }
 };
