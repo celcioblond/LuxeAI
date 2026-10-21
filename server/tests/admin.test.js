@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import request from 'supertest';
 import app from '../app.js';
+import Cart from '../models/cartModel.js';
 import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
@@ -41,6 +42,7 @@ afterEach(async () => {
   await User.deleteMany({});
   await Product.deleteMany({});
   await Order.deleteMany({});
+  await Cart.deleteMany({});
 });
 
 describe('GET /api/admin/stats', () => {
@@ -107,6 +109,15 @@ describe('GET /api/admin/users', () => {
 });
 
 describe('PATCH /api/admin/users/:id', () => {
+  test('should return 400 when the role is not valid', async () => {
+    const response = await request(app)
+      .patch(`/api/admin/users/${regularUserId}`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ role: 'superuser' });
+
+    expect(response.statusCode).toBe(400);
+  });
+
   test('should return 200 with updated user when admin sends valid data', async () => {
     const response = await request(app)
       .patch(`/api/admin/users/${regularUserId}`)
@@ -148,6 +159,16 @@ describe('PATCH /api/admin/users/:id', () => {
 });
 
 describe('DELETE /api/admin/users/:id', () => {
+  test('should also delete the cart of the deleted user', async () => {
+    await Cart.create({ userId: regularUserId, products: [] });
+
+    await request(app)
+      .delete(`/api/admin/users/${regularUserId}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(await Cart.countDocuments({ userId: regularUserId })).toBe(0);
+  });
+
   test('should return 200 with success message when admin deletes a user', async () => {
     const response = await request(app)
       .delete(`/api/admin/users/${regularUserId}`)
@@ -210,6 +231,17 @@ describe('GET /api/admin/orders', () => {
 });
 
 describe('PATCH /api/admin/orders/:id/status', () => {
+  test('should return 400 when the status is not valid', async () => {
+    const fakeId = new mongoose.Types.ObjectId();
+
+    const response = await request(app)
+      .patch(`/api/admin/orders/${fakeId}/status`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ status: 'teleported' });
+
+    expect(response.statusCode).toBe(400);
+  });
+
   test('should return 200 with updated order when admin changes status', async () => {
     const order = await Order.create({
       customer: {
