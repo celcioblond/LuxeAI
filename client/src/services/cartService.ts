@@ -1,5 +1,5 @@
-import { isAxiosError } from "axios";
 import api from "./api";
+import { toMessage } from "./errors";
 
 interface infoCart {
   userId: string;
@@ -33,13 +33,6 @@ interface Cart {
   updatedAt: string;
 }
 
-// Prefer the server's own message (e.g. "Only 3 available") over axios' generic one
-const toMessage = (error: unknown) => {
-  if (isAxiosError(error)) {
-    return error.response?.data?.message ?? error.message;
-  }
-  return error instanceof Error ? error.message : String(error);
-};
 
 export const getCartService = async (userId: string): Promise<Cart> => {
   try {
