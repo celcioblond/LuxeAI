@@ -1,5 +1,6 @@
 import { ZodError } from 'zod';
 import HttpError from '../models/http-error.js';
+import Cart from '../models/cartModel.js';
 import Product from '../models/productModel.js';
 import { productSchema } from '../schemas/productSchema.js';
 import { syncRecommendations } from '../utils/syncRecommendations.js';
@@ -78,6 +79,8 @@ export const deleteProduct = async (req, res, next) => {
     if (!product) {
       return next(new HttpError('Product not found', 404));
     }
+    // Drop the deleted product from every cart so carts never reference it
+    await Cart.updateMany({}, { $pull: { products: { productId } } });
     syncRecommendations();
     res.status(200).json({
       message: 'Product deleted successfully',
