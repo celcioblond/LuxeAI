@@ -12,8 +12,12 @@ const ProductDetails = () => {
 
   const handleAddToCart = async () => {
     if (!product) return;
-    await addToCart(product._id, 1)
-    toast.success(`${product.name} added successfully`)
+    try {
+      await addToCart(product._id, 1)
+      toast.success(`${product.name} added successfully`)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to add to cart')
+    }
   }
 
   useEffect(() => {
