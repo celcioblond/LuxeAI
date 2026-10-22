@@ -383,17 +383,14 @@ describe('Cache behavior', () => {
   test('should include new product after POST invalidates cache', async () => {
     await request(app).get('/api/products');
 
-    await request(app)
-      .post('/api/products')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({
-        name: 'Diamond Ring',
-        price: 1999.99,
-        description: 'A stunning diamond ring for special occasions',
-        category: 'Accessories',
-        stock: 5,
-        imageUrl: 'https://example.com/ring.jpg',
-      });
+    await request(app).post('/api/products').set('Authorization', `Bearer ${adminToken}`).send({
+      name: 'Diamond Ring',
+      price: 1999.99,
+      description: 'A stunning diamond ring for special occasions',
+      category: 'Accessories',
+      stock: 5,
+      imageUrl: 'https://example.com/ring.jpg',
+    });
 
     const response = await request(app).get('/api/products');
 
