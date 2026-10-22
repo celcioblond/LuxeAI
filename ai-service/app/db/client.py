@@ -1,5 +1,6 @@
-from app.core.config import settings
 from pymongo import AsyncMongoClient
+
+from app.core.config import settings
 
 
 def get_client() -> AsyncMongoClient:
