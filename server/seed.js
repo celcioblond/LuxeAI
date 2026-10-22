@@ -51,9 +51,7 @@ const makeOrder = (customer, products, quantities, status, createdAt) => {
     imageUrl: product.imageUrl,
     subtotal: Number((product.price * quantities[i]).toFixed(2)),
   }));
-  const subtotal = Number(
-    items.reduce((sum, item) => sum + item.subtotal, 0).toFixed(2),
-  );
+  const subtotal = Number(items.reduce((sum, item) => sum + item.subtotal, 0).toFixed(2));
   const tax = Number((subtotal * 0.1).toFixed(2));
   const shipping = subtotal >= 100 ? 0 : 10;
   const total = Number((subtotal + tax + shipping).toFixed(2));
@@ -65,8 +63,7 @@ const makeOrder = (customer, products, quantities, status, createdAt) => {
         paidAt: new Date(createdAt.getTime() + 5 * 60 * 1000),
       }
     : {
-        paymentStatus:
-          status === 'pending' ? 'requires_payment_method' : 'canceled',
+        paymentStatus: status === 'pending' ? 'requires_payment_method' : 'canceled',
       };
 
   return {
@@ -174,19 +171,13 @@ const buildCarts = (users, products) =>
 
 //Collections + indexes the app expects, including the one the AI service owns
 const ensureCollections = async () => {
-  await Promise.all(
-    [User, Product, Order, Cart].map((model) => model.createIndexes()),
-  );
+  await Promise.all([User, Product, Order, Cart].map((model) => model.createIndexes()));
   const { db } = mongoose.connection;
-  const existing = await db
-    .listCollections({ name: 'saved_recommendations' })
-    .toArray();
+  const existing = await db.listCollections({ name: 'saved_recommendations' }).toArray();
   if (existing.length === 0) {
     await db.createCollection('saved_recommendations');
   }
-  await db
-    .collection('saved_recommendations')
-    .createIndex({ userId: 1 }, { unique: true });
+  await db.collection('saved_recommendations').createIndex({ userId: 1 }, { unique: true });
 };
 
 const seedDb = async () => {
@@ -196,9 +187,7 @@ const seedDb = async () => {
   }
   //Verification steps
   if (uri.startsWith('mongodb+srv') && !process.argv.includes('--force')) {
-    throw new Error(
-      'MONGODB_URI targets Atlas. Re-run with --force if intended.',
-    );
+    throw new Error('MONGODB_URI targets Atlas. Re-run with --force if intended.');
   }
   try {
     //Connect to db
