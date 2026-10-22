@@ -169,8 +169,7 @@ const products = [
   {
     name: 'Canvas Weekender Duffel',
     price: 145.0,
-    description:
-      'Durable canvas duffel bag with leather handles and shoulder strap',
+    description: 'Durable canvas duffel bag with leather handles and shoulder strap',
     category: 'Bags',
     stock: 14,
     imageUrl: imgUrl('weekender-duffel'),
