@@ -203,10 +203,20 @@ describe('GET /api/orders/me', () => {
           subtotal: 299.99,
         },
       ],
-      shippingAddress: { street: '123 Main St', city: 'New York', state: 'NY', zip: '10001', country: 'US' },
+      shippingAddress: {
+        street: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        zip: '10001',
+        country: 'US',
+      },
       totalAmount: { subtotal: 299.99, tax: 30, shipping: 0, total: 329.99 },
       status: 'pending',
-      stripeInfo: { paymentIntentId: 'pi_test', clientSecret: 'secret', paymentStatus: 'requires_payment_method' },
+      stripeInfo: {
+        paymentIntentId: 'pi_test',
+        clientSecret: 'secret',
+        paymentStatus: 'requires_payment_method',
+      },
     });
 
     const response = await request(app)
@@ -244,10 +254,20 @@ describe('GET /api/orders/:id', () => {
           subtotal: 299.99,
         },
       ],
-      shippingAddress: { street: '123 Main St', city: 'New York', state: 'NY', zip: '10001', country: 'US' },
+      shippingAddress: {
+        street: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        zip: '10001',
+        country: 'US',
+      },
       totalAmount: { subtotal: 299.99, tax: 30, shipping: 0, total: 329.99 },
       status: 'pending',
-      stripeInfo: { paymentIntentId: 'pi_test', clientSecret: 'secret', paymentStatus: 'requires_payment_method' },
+      stripeInfo: {
+        paymentIntentId: 'pi_test',
+        clientSecret: 'secret',
+        paymentStatus: 'requires_payment_method',
+      },
     });
 
     const response = await request(app)
@@ -282,10 +302,20 @@ describe('GET /api/orders/:id', () => {
           subtotal: 299.99,
         },
       ],
-      shippingAddress: { street: '123 Main St', city: 'New York', state: 'NY', zip: '10001', country: 'US' },
+      shippingAddress: {
+        street: '123 Main St',
+        city: 'New York',
+        state: 'NY',
+        zip: '10001',
+        country: 'US',
+      },
       totalAmount: { subtotal: 299.99, tax: 30, shipping: 0, total: 329.99 },
       status: 'pending',
-      stripeInfo: { paymentIntentId: 'pi_test', clientSecret: 'secret', paymentStatus: 'requires_payment_method' },
+      stripeInfo: {
+        paymentIntentId: 'pi_test',
+        clientSecret: 'secret',
+        paymentStatus: 'requires_payment_method',
+      },
     });
 
     const response = await request(app)
