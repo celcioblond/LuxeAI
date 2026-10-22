@@ -8,6 +8,13 @@ import cache from '../utils/cache.js';
 import { syncRecommendations } from '../utils/syncRecommendations.js';
 import { createOrderSchema, updateOrderStatusSchema } from '../schemas/orderSchema.js';
 
+// PaymentIntent states in which the customer can still pay
+const REUSABLE_PAYMENT_STATUSES = [
+  'requires_payment_method',
+  'requires_confirmation',
+  'requires_action',
+];
+
 let stripeClient = null;
 const getStripe = () => {
   if (!stripeClient) stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -40,7 +47,10 @@ export const createOrder = async (req, res, next) => {
     const { firstName, lastName, shippingAddress } = createOrderSchema.parse(req.body);
     const { userId, email } = req.user;
 
-    const cart = await Cart.findOne({ userId }).populate('products.productId', 'name price imageUrl stock');
+    const cart = await Cart.findOne({ userId }).populate(
+      'products.productId',
+      'name price imageUrl stock',
+    );
     if (!cart) {
       return next(new HttpError('Cart is empty', 400));
     }
@@ -52,9 +62,7 @@ export const createOrder = async (req, res, next) => {
     }
 
     // Stock is only checked when adding to the cart, which may have been long ago
-    const unavailable = cartItems.find(
-      (item) => item.quantity > item.productId.stock,
-    );
+    const unavailable = cartItems.find((item) => item.quantity > item.productId.stock);
     if (unavailable) {
       return next(
         new HttpError(
@@ -78,8 +86,45 @@ export const createOrder = async (req, res, next) => {
     const shipping = subtotal >= 100 ? 0 : 10;
     const total = parseFloat((subtotal + tax + shipping).toFixed(2));
 
+    const amount = Math.round(total * 100);
+
+    // Going back to the shipping step and submitting again must not leave a
+    // trail of abandoned orders: reuse the user's pending order while its
+    // PaymentIntent can still be paid, updated to the current cart.
+    const pendingOrder = await Order.findOne({
+      'customer.userId': userId,
+      status: 'pending',
+      'stripeInfo.paymentIntentId': { $exists: true },
+    }).sort({ createdAt: -1 });
+
+    if (pendingOrder) {
+      const current = await getStripe().paymentIntents.retrieve(
+        pendingOrder.stripeInfo.paymentIntentId,
+      );
+      if (REUSABLE_PAYMENT_STATUSES.includes(current.status)) {
+        const paymentIntent =
+          current.amount === amount
+            ? current
+            : await getStripe().paymentIntents.update(current.id, { amount });
+
+        pendingOrder.set({
+          customer: { userId, firstName, lastName, email },
+          products,
+          shippingAddress,
+          totalAmount: { subtotal, tax, shipping, total },
+          'stripeInfo.paymentStatus': paymentIntent.status,
+        });
+        await pendingOrder.save();
+
+        return res.status(200).json({
+          orderId: pendingOrder._id,
+          clientSecret: pendingOrder.stripeInfo.clientSecret,
+        });
+      }
+    }
+
     const paymentIntent = await getStripe().paymentIntents.create({
-      amount: Math.round(total * 100),
+      amount,
       currency: 'usd',
       metadata: { userId },
     });
@@ -211,11 +256,7 @@ export const updateOrderStatus = async (req, res, next) => {
     const { id } = req.params;
     const { status } = updateOrderStatusSchema.parse(req.body);
 
-    const order = await Order.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true },
-    );
+    const order = await Order.findByIdAndUpdate(id, { status }, { new: true });
 
     if (!order) {
       return next(new HttpError('Order not found', 404));
