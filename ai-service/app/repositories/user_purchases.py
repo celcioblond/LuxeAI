@@ -1,11 +1,8 @@
 from collections import Counter
 
 from bson import ObjectId
-from bson.errors import InvalidId
-from fastapi import HTTPException
 from pymongo.asynchronous.collection import AsyncCollection
 from pymongo.asynchronous.database import AsyncDatabase
-from pymongo.errors import PyMongoError
 
 PAID_STATUSES = ["paid", "processing", "shipped", "delivered"]
 
