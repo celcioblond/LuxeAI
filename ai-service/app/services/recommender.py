@@ -25,8 +25,10 @@ def build_index(products: list[dict]) -> CatalogIndex:
 
     products_by_id: dict = {product["_id"]: product for product in products}
 
+    # The category is repeated on purpose: it weighs more than a single word
     texts = [
-        f"{product['name']} {product['description']} {product['category']} {product['category']}"
+        f"{product['name']} {product['description']} "
+        f"{product['category']} {product['category']}"
         for product in products
     ]
 
