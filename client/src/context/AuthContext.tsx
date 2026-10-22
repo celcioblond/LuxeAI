@@ -1,5 +1,9 @@
 import { createContext, useState, useEffect } from 'react';
-import { loginService, registerService } from '../services/authService';
+import {
+  checkSessionService,
+  loginService,
+  registerService,
+} from '../services/authService';
 
 interface LoginCredentials{
   email: string;
@@ -57,19 +61,48 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    if (storedToken && storedUser && !isTokenExpired(storedToken)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    } else {
-      // Drop an expired/invalid session so guarded routes don't render.
+    const clearSession = () => {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+    };
+
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+    if (!storedToken || !storedUser || isTokenExpired(storedToken)) {
+      // Drop an expired/invalid session so guarded routes don't render.
+      clearSession();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLoading(false);
+      return;
     }
 
-    setLoading(false);
+    // A token that looks valid may belong to a previous run of the stack (the
+    // server rejects it after a restart). Check before showing private pages,
+    // so the user goes to the login page instead of a half-broken screen.
+    let cancelled = false;
+    checkSessionService(storedToken)
+      .then((sessionUser) => {
+        if (cancelled) return;
+        setToken(storedToken);
+        setUser(sessionUser);
+        localStorage.setItem('user', JSON.stringify(sessionUser));
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        // Only a rejected session logs out; a down server keeps the stored one
+        if (error?.response?.status === 401) clearSession();
+        else {
+          setToken(storedToken);
+          setUser(JSON.parse(storedUser));
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const login = async (credentials: LoginCredentials) => {
