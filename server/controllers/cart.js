@@ -1,24 +1,27 @@
-import HttpError from "../models/http-error.js"
-import Cart from "../models/cartModel.js"
-import Product from "../models/productModel.js";
+import HttpError from '../models/http-error.js';
+import Cart from '../models/cartModel.js';
+import Product from '../models/productModel.js';
 
-export const getCart = async(req, res, next) => {
+export const getCart = async (req, res, next) => {
   try {
     const { userId } = req.params;
     if (req.user.userId !== userId) {
       return next(new HttpError('Unauthorized', 403));
     }
-    const cart = await Cart.findOne({ userId }).populate('products.productId', 'name price imageUrl stock');
+    const cart = await Cart.findOne({ userId }).populate(
+      'products.productId',
+      'name price imageUrl stock',
+    );
 
     if (cart) {
       cart.products = cart.products.filter((item) => item.productId);
     }
 
     res.status(200).json({ cart: cart ?? { userId, products: [] } });
-  } catch(error) {
+  } catch (error) {
     return next(new HttpError(`Failed to fetch cart: ${error.message}`, 500));
   }
-}
+};
 export const addToCart = async (req, res, next) => {
   try {
     const { userId, productId, quantity } = req.body;
@@ -40,12 +43,15 @@ export const addToCart = async (req, res, next) => {
       return next(new HttpError(`Only ${product.stock} available`, 400));
     }
 
-    const cart = await Cart.findOne({ userId }).populate('products.productId', 'name price imageUrl stock');
+    const cart = await Cart.findOne({ userId }).populate(
+      'products.productId',
+      'name price imageUrl stock',
+    );
 
     if (cart) {
       cart.products = cart.products.filter((p) => p.productId);
       const existingProduct = cart.products.find(
-        (p) => p.productId._id.toString() === productId.toString()
+        (p) => p.productId._id.toString() === productId.toString(),
       );
 
       if (existingProduct) {
@@ -70,119 +76,128 @@ export const addToCart = async (req, res, next) => {
   }
 };
 
-export const updateCart = async(req, res, next) => {
+export const updateCart = async (req, res, next) => {
   try {
-    const {userId} = req.params;
+    const { userId } = req.params;
     if (req.user.userId !== userId) {
       return next(new HttpError('Unauthorized', 403));
     }
-    const {productId, quantity} = req.body;
-    if(!userId || !productId){
-      return next(new HttpError("No user or product found", 400));
+    const { productId, quantity } = req.body;
+    if (!userId || !productId) {
+      return next(new HttpError('No user or product found', 400));
     }
-    if(quantity < 0) {
-      return next(new HttpError("Quantity cannot be negative", 400));
+    if (quantity < 0) {
+      return next(new HttpError('Quantity cannot be negative', 400));
     }
     const product = await Product.findById(productId);
-    if(!product) {
-      return next(new HttpError("Product not found", 404));
+    if (!product) {
+      return next(new HttpError('Product not found', 404));
     }
-    const cart = await Cart.findOne({userId});
-    if(!cart) {
-      return next(new HttpError("Cart not found", 404));
+    const cart = await Cart.findOne({ userId });
+    if (!cart) {
+      return next(new HttpError('Cart not found', 404));
     }
 
-    const productInside = cart.products.find(p => p.productId.toString() === productId.toString());
-    if(!productInside){
-      return next(new HttpError("Product not in cart", 404));
+    const productInside = cart.products.find(
+      (p) => p.productId.toString() === productId.toString(),
+    );
+    if (!productInside) {
+      return next(new HttpError('Product not in cart', 404));
     }
-    if(quantity === 0){
-      const productIndex = cart.products.findIndex(p => p.productId.toString() === productId.toString());
+    if (quantity === 0) {
+      const productIndex = cart.products.findIndex(
+        (p) => p.productId.toString() === productId.toString(),
+      );
       cart.products.splice(productIndex, 1);
     } else {
-      if(product.stock === 0 || quantity > product.stock) {
+      if (product.stock === 0 || quantity > product.stock) {
         return next(new HttpError(`Only ${product.stock} is available`, 400));
       }
       productInside.quantity = quantity;
-    };
+    }
     await cart.save();
-    res.status(200).json({cart})
-  } catch(error) {
+    res.status(200).json({ cart });
+  } catch (error) {
     return next(new HttpError(`${error.message}`, 500));
   }
-}
+};
 
-export const deleteProduct = async(req, res, next) => {
+export const deleteProduct = async (req, res, next) => {
   try {
-    const {userId, productId} = req.params;
+    const { userId, productId } = req.params;
     if (req.user.userId !== userId) {
       return next(new HttpError('Unauthorized', 403));
     }
-    if(!userId || !productId) {
-      return next(new HttpError("User and product are required", 400));
+    if (!userId || !productId) {
+      return next(new HttpError('User and product are required', 400));
     }
-    const cart = await Cart.findOne({userId});
-    if(!cart) {
-      return next(new HttpError("Cart not found", 404));
+    const cart = await Cart.findOne({ userId });
+    if (!cart) {
+      return next(new HttpError('Cart not found', 404));
     }
     const product = await Product.findById(productId);
-    if(!product){
-      return next(new HttpError("Product does not exist", 404));
+    if (!product) {
+      return next(new HttpError('Product does not exist', 404));
     }
-    const productIndex = cart.products.findIndex(p=> p.productId.toString() === productId.toString());
-    if(productIndex === -1){
-      return next(new HttpError("Product not found on cart", 404));
+    const productIndex = cart.products.findIndex(
+      (p) => p.productId.toString() === productId.toString(),
+    );
+    if (productIndex === -1) {
+      return next(new HttpError('Product not found on cart', 404));
     }
     cart.products.splice(productIndex, 1);
     await cart.save();
     res.status(200).json({
-      cart
+      cart,
     });
   } catch (error) {
-    return next (new HttpError(`${error.message}`, 500));
+    return next(new HttpError(`${error.message}`, 500));
   }
-}
+};
 
-export const getCartTotal = async(req, res, next) => {
+export const getCartTotal = async (req, res, next) => {
   try {
-    const {userId} = req.params;
+    const { userId } = req.params;
     if (req.user.userId !== userId) {
       return next(new HttpError('Unauthorized', 403));
     }
-    const cart = await Cart.findOne({userId}).populate('products.productId', 'name price imageUrl stock');
-    if(!cart) {
-      return next(new HttpError("Cart was not found", 404));
+    const cart = await Cart.findOne({ userId }).populate(
+      'products.productId',
+      'name price imageUrl stock',
+    );
+    if (!cart) {
+      return next(new HttpError('Cart was not found', 404));
     }
 
     const cartTotal = cart.products.reduce((total, p) => {
       if (!p.productId) return total;
-      return total + (p.productId.price*p.quantity);
+      return total + p.productId.price * p.quantity;
     }, 0);
 
-    res.status(200).json({cartTotal});
-  } catch(error) {
-    return next (new HttpError(`${error.message}`, 500));
+    res.status(200).json({ cartTotal });
+  } catch (error) {
+    return next(new HttpError(`${error.message}`, 500));
   }
-}
+};
 
-export const clearCart = async(req, res, next) => {
+export const clearCart = async (req, res, next) => {
   try {
-    const {userId} = req.params;
+    const { userId } = req.params;
     if (req.user.userId !== userId) {
       return next(new HttpError('Unauthorized', 403));
     }
-    if(!userId) {
-      return next(new HttpError("UserId is required", 400));
+    if (!userId) {
+      return next(new HttpError('UserId is required', 400));
     }
-    
-    const cart = await Cart.findOne({userId});
-    if(!cart) {
+
+    const cart = await Cart.findOne({ userId });
+    if (!cart) {
       return next(new HttpError(`Cart was not found for user with id: ${userId}`, 500));
     }
     cart.products = [];
     await cart.save();
-    res.status(200).json({message: "Cart cleared successfully", cart});
-  } catch(error) {
-    return next (new HttpError(`${error.message}`, 500));
+    res.status(200).json({ message: 'Cart cleared successfully', cart });
+  } catch (error) {
+    return next(new HttpError(`${error.message}`, 500));
   }
-}
+};
