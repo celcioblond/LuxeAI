@@ -199,9 +199,7 @@ describe('DELETE /api/admin/users/:id', () => {
   });
 
   test('should return 401 when no token is provided', async () => {
-    const response = await request(app).delete(
-      `/api/admin/users/${regularUserId}`,
-    );
+    const response = await request(app).delete(`/api/admin/users/${regularUserId}`);
 
     expect(response.statusCode).toBe(401);
   });
