@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import HttpError from '../models/http-error.js';
 import User from '../models/userModel.js';
+import { BOOT_ID } from '../utils/sessionBoot.js';
 
 export const protect = async (req, res, next) => {
   try {
@@ -13,6 +14,10 @@ export const protect = async (req, res, next) => {
       return next(new HttpError('Token is missing', 401));
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Issued before the stack last started: the session is over
+    if (decoded.boot !== BOOT_ID) {
+      return next(new HttpError('Session expired', 401));
+    }
     req.user = decoded;
     next();
   } catch (error) {
