@@ -1,8 +1,8 @@
-import cache from "../utils/cache.js";
+import cache from '../utils/cache.js';
 
 export const cacheResponse = (keyFn, ttl) => async (req, res, next) => {
   try {
-    const key = typeof keyFn === "function" ? keyFn(req) : keyFn;
+    const key = typeof keyFn === 'function' ? keyFn(req) : keyFn;
     const cached = cache.get(key);
     if (cached) {
       return res.status(200).json(cached);
@@ -20,10 +20,12 @@ export const cacheResponse = (keyFn, ttl) => async (req, res, next) => {
   }
 };
 
-export const invalidateCache = (...keyFns) => (req, res, next) => {
-  keyFns.forEach((keyFn) => {
-    const key = typeof keyFn === "function" ? keyFn(req) : keyFn;
-    cache.del(key);
-  });
-  next();
-};
+export const invalidateCache =
+  (...keyFns) =>
+  (req, res, next) => {
+    keyFns.forEach((keyFn) => {
+      const key = typeof keyFn === 'function' ? keyFn(req) : keyFn;
+      cache.del(key);
+    });
+    next();
+  };
