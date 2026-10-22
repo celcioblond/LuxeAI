@@ -297,9 +297,7 @@ describe('DELETE /api/cart/deleteProduct/:userId/:productId', () => {
     });
 
     const response = await request(app)
-      .delete(
-        `/api/cart/deleteProduct/${otherUser.body.user.id}/${new mongoose.Types.ObjectId()}`,
-      )
+      .delete(`/api/cart/deleteProduct/${otherUser.body.user.id}/${new mongoose.Types.ObjectId()}`)
       .set('Authorization', `Bearer ${userToken}`);
 
     expect(response.statusCode).toBe(403);
