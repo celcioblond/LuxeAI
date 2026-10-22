@@ -329,6 +329,7 @@ These are deliberate trade-offs for the current scale (a single instance of each
 - **The AI service has no authentication.** It relies on network isolation: the compose network, and a port published only on `127.0.0.1`. Exposing it needs a shared secret between the backend and the service.
 - **Content-based only.** Users without paid orders get no recommendations; collaborative filtering and trending products are on the roadmap.
 - **Abandoned checkouts are not expired.** A user's pending order is reused when they check out again, but pending orders are never cleaned up automatically.
+- **Sessions end when the stack restarts.** Every token carries the id of the run that issued it, and the backend rejects tokens from an earlier run, so restarting the containers sends everyone back to the login page. Editing code (nodemon reloads) does not log you out. It also means that with several backend instances each would reject the others' tokens.
 - **The JWT is stored in `localStorage`**, which an XSS bug could read. An `httpOnly` cookie would be safer. Authorization never trusts the token's role: admin routes check it in the database.
 - **Docker Compose is set up for development** (Vite dev server, nodemon, `fastapi dev`, source mounted into the containers). A production setup would serve the client's static build and run the services without reload.
 
