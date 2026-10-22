@@ -74,9 +74,7 @@ export const deleteUser = async (req, res, next) => {
     // purpose: they are financial records.
     await Promise.all([
       Cart.deleteOne({ userId: id }),
-      mongoose.connection
-        .collection('saved_recommendations')
-        .deleteOne({ userId: id }),
+      mongoose.connection.collection('saved_recommendations').deleteOne({ userId: id }),
     ]);
 
     res.status(200).json({ message: 'User deleted successfully' });
