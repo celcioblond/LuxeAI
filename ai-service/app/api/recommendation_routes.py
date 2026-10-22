@@ -1,3 +1,6 @@
+from bson.errors import InvalidId
+from fastapi import APIRouter, HTTPException, Query, Request
+
 from app.db.db import MongoDbDep
 from app.repositories.catalog import get_catalog
 from app.repositories.saved_recommendations import (
@@ -7,8 +10,6 @@ from app.repositories.saved_recommendations import (
 from app.repositories.user_purchases import get_user_purchases
 from app.schemas.serialize_products import individual_serial_to_front
 from app.services.recommender import build_index, recommend
-from bson.errors import InvalidId
-from fastapi import APIRouter, HTTPException, Query, Request
 
 MAX_SAVED_RECOMMENDATIONS = 12
 
@@ -24,7 +25,7 @@ async def get_recommendations(
     try:
         purchases = await get_user_purchases(user_id, db)
     except InvalidId:
-        raise HTTPException(status_code=400, detail="Invalid user id")
+        raise HTTPException(status_code=400, detail="Invalid user id") from None
 
     if not purchases:
         return {"recommendations": []}
