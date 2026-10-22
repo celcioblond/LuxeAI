@@ -1,10 +1,11 @@
 from typing import Annotated
 
+from fastapi import Depends, FastAPI, Request
+from pymongo.asynchronous.database import AsyncDatabase
+
 from app.db.client import get_client
 from app.repositories.catalog import get_catalog
 from app.services.recommender import build_index
-from fastapi import Depends, FastAPI, Request
-from pymongo.asynchronous.database import AsyncDatabase
 
 
 async def lifespan(app: FastAPI):
