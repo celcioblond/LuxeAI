@@ -2,7 +2,7 @@
 
 A full-stack e-commerce platform with a recommendation engine that suggests products based on what each user has bought. Built with the MERN stack and a Python/FastAPI recommendation service.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
 ![Stack](https://img.shields.io/badge/stack-MERN%20%2B%20Python-green)
 
@@ -220,7 +220,15 @@ cd server && npm test
 cd ai-service && uv run pytest
 ```
 
-Both suites also run in GitHub Actions on every push to `main` that changes their folder.
+Lint and formatting (ESLint + Prettier in `server/`, ruff in `ai-service/`, ESLint in `client/`):
+
+```bash
+cd server && npm run lint && npm run format:check   # npm run format fixes it
+cd ai-service && uv run ruff check . && uv run ruff format --check .
+cd client && npm run lint
+```
+
+GitHub Actions runs lint, the formatting check and the tests of `server/` and `ai-service/` on every push to `main` that changes their folder.
 
 ### Troubleshooting
 
@@ -269,7 +277,7 @@ Both suites also run in GitHub Actions on every push to `main` that changes thei
 
 | Method | Endpoint       | Description                                             |
 |--------|----------------|---------------------------------------------------------|
-| POST   | `/`            | Create an order from the cart and a Stripe PaymentIntent |
+| POST   | `/`            | Create an order from the cart and a Stripe PaymentIntent (reuses the user's pending order if they check out again) |
 | POST   | `/:id/confirm` | Mark the order paid after Stripe confirms the payment    |
 | GET    | `/me`          | Current user's orders                                   |
 | GET    | `/:id`         | Single order (owner only)                               |
@@ -309,6 +317,21 @@ The AI service uses **content-based filtering**:
 3. **Ranking.** Products are ranked by cosine similarity to that profile, skipping what the user already bought and anything out of stock.
 4. **Memory.** Recommendations already shown are saved per user (`saved_recommendations` collection) and kept on later visits, with new ones appended, up to 12. A saved product is dropped once the user buys it, it runs out of stock or it is deleted.
 
+## Known Limitations
+
+These are deliberate trade-offs for the current scale (a single instance of each service and a catalog of hundreds of products), documented so they are not mistaken for oversights.
+
+- **State lives in memory, per process.** The product cache, the recommender index and the login rate-limit counter are kept in memory. With more than one backend or AI service instance, invalidating the cache or syncing the index would only reach one of them; scaling out needs a shared cache (e.g. Redis) and a shared or rebuilt-per-instance index.
+- **Stock is decremented on payment, not reserved at checkout.** Stock is checked when the order is created and decremented when it is paid, never below zero. If two customers pay for the last unit at the same time, both orders are marked paid. A reservation step (hold stock while the PaymentIntent is open) would close that gap.
+- **The recommender index is rebuilt from scratch** on every catalog or stock change. That is instant for this catalog, but grows with its size; a large catalog would need incremental updates.
+- **Index syncs are fire-and-forget.** If the AI service is down when a product changes, its index stays stale until the next change or until it restarts (it always rebuilds on startup).
+- **Reading recommendations writes to the database.** `GET /recommendations/{user_id}` saves the list it returns, so previously shown recommendations persist. It is idempotent, but it is not a pure read.
+- **The AI service has no authentication.** It relies on network isolation: the compose network, and a port published only on `127.0.0.1`. Exposing it needs a shared secret between the backend and the service.
+- **Content-based only.** Users without paid orders get no recommendations; collaborative filtering and trending products are on the roadmap.
+- **Abandoned checkouts are not expired.** A user's pending order is reused when they check out again, but pending orders are never cleaned up automatically.
+- **The JWT is stored in `localStorage`**, which an XSS bug could read. An `httpOnly` cookie would be safer. Authorization never trusts the token's role: admin routes check it in the database.
+- **Docker Compose is set up for development** (Vite dev server, nodemon, `fastapi dev`, source mounted into the containers). A production setup would serve the client's static build and run the services without reload.
+
 ## Roadmap
 
 - [x] Project scaffolding and architecture design
@@ -343,3 +366,7 @@ The AI service uses **content-based filtering**:
 | Testing    | Jest, Supertest, pytest            |
 | DevOps     | Docker, Docker Compose, GitHub Actions |
 | Deployment | Render / Railway (planned)         |
+
+## License
+
+[MIT](LICENSE) © 2026 Mateo Blondet
