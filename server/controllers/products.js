@@ -41,9 +41,7 @@ export const addProduct = async (req, res, next) => {
     });
   } catch (error) {
     if (error instanceof ZodError) {
-      return res
-        .status(400)
-        .json(error.issues.map((issue) => ({ message: issue.message })));
+      return res.status(400).json(error.issues.map((issue) => ({ message: issue.message })));
     }
     return next(new HttpError(`Error message: ${error.message}`, 500));
   }
@@ -69,9 +67,7 @@ export const updateProduct = async (req, res, next) => {
     });
   } catch (error) {
     if (error instanceof ZodError) {
-      return res
-        .status(400)
-        .json(error.issues.map((issue) => ({ message: issue.message })));
+      return res.status(400).json(error.issues.map((issue) => ({ message: issue.message })));
     }
     if (error.name === 'CastError' || error.name === 'ValidationError') {
       return next(new HttpError('Updating product failed', 400));
