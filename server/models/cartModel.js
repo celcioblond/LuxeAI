@@ -1,17 +1,17 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose';
 
 const cartSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     products: [
       {
         productId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
+          ref: 'Product',
           required: true,
         },
         quantity: {
@@ -23,11 +23,11 @@ const cartSchema = new mongoose.Schema(
       },
     ],
   },
-  {timestamps: true}
-)
+  { timestamps: true },
+);
 
 // One cart per user; also makes the userId lookups indexed
 cartSchema.index({ userId: 1 }, { unique: true });
 
-const Cart = mongoose.model("Cart", cartSchema);
+const Cart = mongoose.model('Cart', cartSchema);
 export default Cart;
