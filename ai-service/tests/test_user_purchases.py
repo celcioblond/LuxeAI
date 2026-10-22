@@ -15,9 +15,7 @@ class FakeOrders:
         class Cursor:
             async def to_list(self):
                 return [
-                    o
-                    for o in outer.orders
-                    if o["status"] in query["status"]["$in"]
+                    o for o in outer.orders if o["status"] in query["status"]["$in"]
                 ]
 
         return Cursor()
