@@ -62,12 +62,12 @@ def test_previous_recommendations_are_kept(client):
 
 
 def test_saved_list_is_capped(client):
-    app.state.index = build_index(
-        [product(str(i), "Skincare") for i in range(1, 40)]
-    )
+    app.state.index = build_index([product(str(i), "Skincare") for i in range(1, 40)])
     client.purchases["1"] = 1
     client.store["u1"] = [str(i) for i in range(2, 30)]
-    assert len(ids(client.get("/recommendations/u1"))) == routes.MAX_SAVED_RECOMMENDATIONS
+    assert (
+        len(ids(client.get("/recommendations/u1"))) == routes.MAX_SAVED_RECOMMENDATIONS
+    )
 
 
 def test_invalid_user_id_returns_400():
