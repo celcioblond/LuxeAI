@@ -4,6 +4,7 @@ import User from '../models/userModel.js';
 import HttpError from '../models/http-error.js';
 import bcrypt from 'bcrypt';
 import { loginSchema, registerSchema } from '../schemas/userSchema.js';
+import { BOOT_ID } from '../utils/sessionBoot.js';
 
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
@@ -29,7 +30,7 @@ export const register = async (req, res, next) => {
 
     await user.save();
     const token = jwt.sign(
-      { userId: user._id.toString(), email: user.email, role: user.role },
+      { userId: user._id.toString(), email: user.email, role: user.role, boot: BOOT_ID },
       process.env.JWT_SECRET,
       {
         expiresIn: JWT_EXPIRES_IN,
@@ -74,6 +75,7 @@ export const login = async (req, res, next) => {
         userId: user._id.toString(),
         email: user.email,
         role: user.role,
+        boot: BOOT_ID,
       },
       process.env.JWT_SECRET,
       {
@@ -96,5 +98,26 @@ export const login = async (req, res, next) => {
       return next(new HttpError(error.issues[0].message, 400));
     }
     return next(new HttpError('Login failed', 500));
+  }
+};
+
+// Lets the client check that its stored session is still valid (e.g. after the
+// stack restarted) before showing any private page.
+export const me = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return next(new HttpError('User no longer exists', 401));
+    }
+    res.status(200).json({
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch {
+    return next(new HttpError('Failed to check the session', 500));
   }
 };
